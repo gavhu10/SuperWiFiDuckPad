@@ -9,6 +9,7 @@
 #include "settings.h"
 #include "cli.h"
 #include "USB.h"
+#include "button.h"
 
 
 void setup() {
@@ -20,11 +21,13 @@ void setup() {
     settings::begin();
     cli::begin();
     webserver::begin();
+    setupButtons();
 
     duckscript::run(settings::getAutorun());
 }
 
 void loop() {
     webserver::update();
+    checkButtons();
     debug_update();
 }

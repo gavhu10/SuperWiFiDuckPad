@@ -2,6 +2,7 @@
    This software is licensed under the MIT License. See the license file for details.
    Source: https://github.com/spacehuhntech/WiFiDuck
  */
+#include <atomic>
 
 #include "duckscript.h"
 #include "duckparser.h"
@@ -19,10 +20,13 @@ namespace duckscript {
     char * prevMessage    { NULL };
     size_t prevMessageLen { 0 };
 
-    bool running { false };
+    std::atomic_bool running { false };
 
 
     static void runTask(void* parameter) {
+
+        if (running.exchange(true)) vTaskDelete(NULL);
+
         String* fileNamePtr = (String*) parameter;
         String fileName = *fileNamePtr;
         delete fileNamePtr;  // Free the heap memory
@@ -30,8 +34,9 @@ namespace duckscript {
         if (fileName.length() > 0) {
             debugf("Run file %s\n", fileName.c_str());
             f       = spiffs::open(fileName);
-            running = true;
             nextLine();
+        } else {
+            stopAll();
         }
 
         vTaskDelete(NULL);  // Delete this task when done

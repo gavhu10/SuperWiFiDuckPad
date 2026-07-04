@@ -144,7 +144,7 @@ function format() {
 // ! Run script
 function run(fileName) {
   ws_send("run \"" + fixFileName(fileName) + "\"", log_ws);
-  start_status_interval();
+  setTimeout(() => { start_status_interval(); }, 200)
 }
 
 // ! Stop running specific script

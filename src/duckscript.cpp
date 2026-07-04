@@ -24,19 +24,17 @@ namespace duckscript {
 
 
     static void runTask(void* parameter) {
-
-        if (running.exchange(true)) vTaskDelete(NULL);
-
+        
         String* fileNamePtr = (String*) parameter;
         String fileName = *fileNamePtr;
         delete fileNamePtr;  // Free the heap memory
 
         if (fileName.length() > 0) {
-            debugf("Run file %s\n", fileName.c_str());
-            f       = spiffs::open(fileName);
-            nextLine();
-        } else {
-            stopAll();
+            if (!running.exchange(true)) {
+                debugf("Run file %s\n", fileName.c_str());
+                f       = spiffs::open(fileName);
+                nextLine();
+            }
         }
 
         vTaskDelete(NULL);  // Delete this task when done

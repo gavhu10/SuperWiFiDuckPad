@@ -74,10 +74,10 @@ function append(str) {
 
 // ! Updates file list and memory usage
 function update_file_list() {
-  ws_send("mem", function(msg) {
+  ws_send("mem", function (msg) {
     var lines = msg.split(/\n/);
-    
-    if(lines.length == 1) {
+
+    if (lines.length == 1) {
       console.error("Malformed response:");
       console.error(msg);
       return;
@@ -94,37 +94,19 @@ function update_file_list() {
 
     file_list = "";
 
-    ws_send("ls", function(csv) {
-      file_list += csv;
+    ws_send("ls", function (csv) {
+      var tableHTML = "<tbody id=button-grid>\n";
 
-      var lines = file_list.split(/\n/);
-      var tableHTML = "<thead>\n";
+      for (var i = 0; i < 9; i++) {
+        var fileName = i.toString();
 
-      tableHTML += "<tr>\n";
-      tableHTML += "<th>File</th>\n";
-      tableHTML += "<th>Byte</th>\n";
-      tableHTML += "<th>Actions</th>\n";
-      tableHTML += "</tr>\n";
-      tableHTML += "</thead>\n";
-      tableHTML += "<tbody>\n";
-
-      for (var i = 0; i < lines.length; i++) {
-        var data = lines[i].split(" ");
-        var fileName = data[0];
-        var fileSize = data[1];
-
-        if (fileName.length > 0) {
-          if (i == 0 && !file_opened) {
-            read(fileName);
-          }
-          tableHTML += "<tr>\n";
-          tableHTML += "<td>" + fileName + "</td>\n";
-          tableHTML += "<td>" + fileSize + "</td>\n";
-          tableHTML += "<td>\n";
-          tableHTML += "<button class=\"primary\" onclick=\"read('" + fileName + "')\">edit</button>\n";
-          tableHTML += "<button class=\"warn\" onclick=\"run('" + fileName + "')\">run</button>\n";
-          tableHTML += "</tr>\n";
+        if (i == 0 && !file_opened) {
+          read(fileName);
         }
+        tableHTML += "<tr>\n";
+        tableHTML += "<td>\n";
+        tableHTML += "<button class=\"primary\" onclick=\"read('" + fileName + "')\">" + fileName + "</button>\n";
+        tableHTML += "</tr>\n";
       }
       tableHTML += "</tbody>\n";
 
@@ -159,7 +141,7 @@ function stopAll() {
 
 // ! Recursive read from stream
 function read_stream() {
-  ws_send("read", function(content) {
+  ws_send("read", function (content) {
     if (content != "> END") {
       E("editor").value += content;
       read_stream();
@@ -227,7 +209,7 @@ function write(fileName, content) {
 
   ws_send("stream \"/temporary_script\"", log_ws);
 
-  var ws_send_log = function(msg) {
+  var ws_send_log = function (msg) {
     status("saving...");
     log_ws(msg);
   };
@@ -264,33 +246,33 @@ function ws_connected() {
 }
 
 // ========== Startup ========== //
-window.addEventListener("load", function() {
+window.addEventListener("load", function () {
   E("reconnect").onclick = ws_init;
   E("scriptsReload").onclick = update_file_list;
   E("format").onclick = format;
   E("stop").onclick = stopAll;
 
-  E("editorReload").onclick = function() {
+  E("editorReload").onclick = function () {
     read(get_editor_filename());
   };
 
   E("editorSave").onclick = save;
 
-  E("editorDelete").onclick = function() {
+  E("editorDelete").onclick = function () {
     if (confirm("Delete " + get_editor_filename() + "?")) {
       remove(get_editor_filename());
     }
   };
 
-  E("editorDownload").onclick = function() {
+  E("editorDownload").onclick = function () {
     download_txt(get_editor_filename(), get_editor_content());
   };
 
-  E("editorStop").onclick = function() {
+  E("editorStop").onclick = function () {
     stop(get_editor_filename());
   }
 
-  E("editorRun").onclick = function() {
+  E("editorRun").onclick = function () {
     if (unsaved_changed) {
       save();
     }
@@ -298,12 +280,12 @@ window.addEventListener("load", function() {
     run(get_editor_filename());
   };
 
-  E("editor").onkeyup = function() {
+  E("editor").onkeyup = function () {
     unsaved_changed = true;
     E("editorinfo").innerHTML = "unsaved changes";
   }
 
-  E("editorAutorun").onclick = function() {
+  E("editorAutorun").onclick = function () {
     if (confirm("Run this script automatically on startup?\nYou can disable it in the settings."))
       autorun(get_editor_filename());
   }
@@ -311,7 +293,7 @@ window.addEventListener("load", function() {
   // ! Make all <code>s append to the editor when clicked
   var codes = document.querySelectorAll("code");
   for (var i = 0; i < codes.length; i++) {
-    codes[i].addEventListener("click", function() {
+    codes[i].addEventListener("click", function () {
       append(this.innerHTML + " \n");
     });
   }

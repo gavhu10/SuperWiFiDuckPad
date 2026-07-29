@@ -105,7 +105,7 @@ function update_file_list() {
         }
         tableHTML += "<tr>\n";
         tableHTML += "<td>\n";
-        tableHTML += "<button class=\"primary\" onclick=\"read('" + fileName + "')\">" + fileName + "</button>\n";
+        tableHTML += "<button class=\"primary\" onclick=\"read('" + fileName + "')\">" + (i + 1).toString() + "</button>\n";
         tableHTML += "</tr>\n";
       }
       tableHTML += "</tbody>\n";

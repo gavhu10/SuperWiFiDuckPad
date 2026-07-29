@@ -3,7 +3,7 @@
 #include "duckscript.h"
 
 
-const int buttonPins[] = {12, 11, 10, 9, 8, 7, 6, 5, 4};
+const int buttonPins[] = {12, 9, 6, 11, 8, 5, 10, 7, 4};
 const int numButtons = sizeof(buttonPins) / sizeof(buttonPins[0]);
 
 // TODO: namespace

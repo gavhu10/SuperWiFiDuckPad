@@ -9,6 +9,8 @@
 // ! List of files returned by "ls" command
 var file_list = "";
 
+var profile = "default";
+
 // ! Variable to save interval for updating status continously
 var status_interval = undefined;
 
@@ -40,6 +42,14 @@ function get_editor_content() {
     content = content + "\n";
 
   return content;
+}
+
+// ! Get the profile name
+function get_profile() {
+  ws_send("profile", function (content) {
+    profile = content;
+  })
+  console.log(profile)
 }
 
 // ! Update status until it's no longer "running"
@@ -98,7 +108,7 @@ function update_file_list() {
       var tableHTML = "<tbody id=button-grid>\n";
 
       for (var i = 0; i < 9; i++) {
-        var fileName = i.toString();
+        var fileName = profile + i.toString();
 
         if (i == 0 && !file_opened) {
           read(fileName);
@@ -186,13 +196,6 @@ function create(fileName) {
   }
 }
 
-// ! Delete a file
-function remove(fileName) {
-  stop(fileName);
-  ws_send("remove \"" + fixFileName(fileName) + "\"", log_ws);
-  update_file_list();
-  unsaved_changed = true;
-}
 
 function autorun(fileName) {
   ws_send("set autorun \"" + fixFileName(fileName) + "\"", log_ws);

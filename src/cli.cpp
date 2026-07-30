@@ -164,6 +164,10 @@ namespace cli {
             }
         });
 
+        cli.addCommand("profile", [](cmd* c) {
+            print("default");
+        });
+
         /**
          * \brief Create ls command
          *

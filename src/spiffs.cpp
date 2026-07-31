@@ -157,6 +157,30 @@ namespace spiffs {
         return res;
     }
 
+
+    String readFile(String fileName) {
+        String ret;
+
+        File f = spiffs::open(fileName);
+
+        int buf_size { 256 };
+        char buffer[buf_size];
+
+        while (f && f.available()) {
+            for (size_t i = 0; i<buf_size; ++i) {
+                if (!f.available() || (i == buf_size-1)) {
+                    buffer[i] = '\0';
+                    i         = buf_size;
+                } else {
+                    buffer[i] = f.read();
+                }
+            }
+            ret += buffer;
+        };
+
+        return ret;
+    }
+
     void streamOpen(String fileName) {
         streamClose();
         streamFile = open(fileName);

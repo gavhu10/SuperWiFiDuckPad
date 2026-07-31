@@ -23,6 +23,9 @@
 #include "settings.h"
 #include "config.h"
 
+// File for profiles
+#define PROFILE_FILE ".current-profile"
+
 namespace cli {
     // ===== PRIVATE ===== //
     SimpleCLI cli;           // !< Instance of SimpleCLI library
@@ -164,8 +167,20 @@ namespace cli {
             }
         });
 
-        cli.addCommand("profile", [](cmd* c) {
-            print("default");
+        cli.addCommand("profile_set", [](cmd* c) {
+            Command  cmd { c };
+            Argument arg { cmd.getArg(0) };
+
+            spiffs::write(PROFILE_FILE, arg.getValue().c_str());
+        });
+
+        cli.addCommand("profile_get", [](cmd* c) {
+            String contents = spiffs::readFile(PROFILE_FILE);
+            if (contents == "") {
+                print("default");
+            } else {
+                print(contents);
+            }
         });
 
         /**
@@ -213,22 +228,7 @@ namespace cli {
             Command  cmd { c };
             Argument arg { cmd.getArg(0) };
 
-            File f = spiffs::open(arg.getValue());
-
-            int buf_size { 256 };
-            char buffer[buf_size];
-
-            while (f && f.available()) {
-                for (size_t i = 0; i<buf_size; ++i) {
-                    if (!f.available() || (i == buf_size-1)) {
-                        buffer[i] = '\0';
-                        i         = buf_size;
-                    } else {
-                        buffer[i] = f.read();
-                    }
-                }
-                print(buffer);
-            }
+            print(spiffs::readFile(arg.getValue()));
         });
 
         /**

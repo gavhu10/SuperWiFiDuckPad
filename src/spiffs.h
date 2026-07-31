@@ -30,6 +30,7 @@ namespace spiffs {
 
     String listDir(String dirName);
 
+    String readFile(String fileName);
     void streamOpen(String fileName);
     void streamWrite(const char* buf, size_t len);
     size_t streamRead(char* buf, size_t len);

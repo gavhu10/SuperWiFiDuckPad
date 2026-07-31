@@ -46,7 +46,7 @@ function get_editor_content() {
 
 // ! Get the profile name
 function get_profile() {
-  ws_send("profile", function (content) {
+  ws_send("profile_get", function (content) {
     profile = content;
   })
   console.log(profile)
@@ -84,6 +84,7 @@ function append(str) {
 
 // ! Updates file list and memory usage
 function update_file_list() {
+  get_profile();
   ws_send("mem", function (msg) {
     var lines = msg.split(/\n/);
 
@@ -261,11 +262,6 @@ window.addEventListener("load", function () {
 
   E("editorSave").onclick = save;
 
-  E("editorDelete").onclick = function () {
-    if (confirm("Delete " + get_editor_filename() + "?")) {
-      remove(get_editor_filename());
-    }
-  };
 
   E("editorDownload").onclick = function () {
     download_txt(get_editor_filename(), get_editor_content());

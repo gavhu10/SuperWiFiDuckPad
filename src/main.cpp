@@ -21,13 +21,13 @@ void setup() {
     settings::begin();
     cli::begin();
     webserver::begin();
-    setupButtons();
+    button::setupButtons();
 
     duckscript::run(settings::getAutorun());
 }
 
 void loop() {
     webserver::update();
-    checkButtons();
+    button::checkButtons();
     debug_update();
 }

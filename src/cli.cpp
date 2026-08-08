@@ -22,9 +22,8 @@
 #include "duckscript.h"
 #include "settings.h"
 #include "config.h"
+#include "profile.h"
 
-// File for profiles
-#define PROFILE_FILE ".current-profile"
 
 namespace cli {
     // ===== PRIVATE ===== //
@@ -171,16 +170,11 @@ namespace cli {
             Command  cmd { c };
             Argument arg { cmd.getArg(0) };
 
-            spiffs::write(PROFILE_FILE, arg.getValue().c_str());
+           profile::set_profile(arg.getValue());
         });
 
         cli.addCommand("profile_get", [](cmd* c) {
-            String contents = spiffs::readFile(PROFILE_FILE);
-            if (contents == "") {
-                print("default");
-            } else {
-                print(contents);
-            }
+            print(profile::get_profile());
         });
 
         /**

@@ -47,3 +47,6 @@ save-commands.json
 .idea
 .vscode
 
+# encoded and compressed web files
+src/webfiles.h
+

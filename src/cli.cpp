@@ -166,16 +166,35 @@ namespace cli {
             }
         });
 
-        cli.addCommand("profile_set", [](cmd* c) {
+        cli.addSingleArgCmd("set_profile", [](cmd* c) {
             Command  cmd { c };
             Argument arg { cmd.getArg(0) };
 
            profile::set_profile(arg.getValue());
         });
 
-        cli.addCommand("profile_get", [](cmd* c) {
+        cli.addCommand("get_profile", [](cmd* c) {
             print(profile::get_profile());
         });
+
+        cli.addSingleArgCmd("add_profile", [](cmd* c) {
+            Command  cmd { c };
+            Argument arg { cmd.getArg(0) };
+
+           profile::add_profile(arg.getValue());
+        });
+
+        cli.addSingleArgCmd("remove_profile", [](cmd* c) {
+            Command  cmd { c };
+            Argument arg { cmd.getArg(0) };
+
+           profile::remove_profile(arg.getValue());
+        });
+
+        cli.addCommand("list_profile", [](cmd *c) {
+            print(profile::get_profile_list());
+        });
+        
 
         /**
          * \brief Create ls command

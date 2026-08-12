@@ -37,8 +37,12 @@
                 </div>
             </section>
             <section>
-                <h1>Profile</h1>
-                todo
+                <h1>Profile <a class="reload" id="profileReload">&#x21bb;</a></h1>
+                <table class="table" id="profileTable"></table>
+                <div class="row">
+                    <input placeholder="New profile name" type="text" class="smooth" value="" id="newProfile"/>
+                    <button class="success" onclick="create_profile(get_new_profile())">create</button>
+                </div>
             </section>
             <section>
                 <h1>Scripts <a class="reload" id="scriptsReload">&#x21bb;</a></h1>

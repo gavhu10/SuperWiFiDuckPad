@@ -46,10 +46,22 @@ function get_editor_content() {
 
 // ! Get the profile name
 function get_profile() {
-  ws_send("profile_get", function (content) {
+  ws_send("get_profile", function (content) {
     profile = content;
   })
   console.log(profile)
+}
+
+function set_profile(profile) {
+  ws_send("set_profile " + profile, log_ws);
+}
+
+function remove_profile(profile) {
+  ws_send("remove_profile " + profile, log_ws);
+}
+
+function get_new_profile() {
+  return E("newProfile").value;
 }
 
 // ! Update status until it's no longer "running"
@@ -126,6 +138,34 @@ function update_file_list() {
   });
 }
 
+function update_profiles() {
+  get_profile();
+  ws_send("list_profile", function (msg) {
+    var lines = msg.split(/\n/);
+
+    var tableHTML = "<thead>\n";
+    tableHTML += "<tr>\n";
+    tableHTML += "<th>Profile</th>\n";
+    tableHTML += "<th>Actions</th>\n";
+    tableHTML += "</tr>\n";
+    tableHTML += "</thead>\n";
+    tableHTML += "<tbody>\n";
+
+    for (const profile of lines) {
+      tableHTML += "<tr>\n";
+      tableHTML += "<td>" + profile + "</td>\n";
+      tableHTML += "<td>\n";
+      tableHTML += "<button class=\"primary\" onclick=\"set_profile('" + profile + "')\">set profile</button>\n";
+      tableHTML += "<button class=\"warn\" onclick=\"delete_profile('" + profile + "')\">delete profile</button>\n";
+      tableHTML += "</tr>\n";
+    }
+
+    tableHTML += "</tbody>\n";
+
+    E("profileTable").innerHTML = tableHTML;
+  });
+}
+
 // ! Format SPIFFS
 function format() {
   if (confirm("Format SPIFFS? This will delete all scripts!")) {
@@ -178,6 +218,14 @@ function read(fileName) {
   read_stream(); // !< Read file contents (recursively)
 
   file_opened = true;
+}
+
+
+// ! Create a new profile
+function create_profile(profileName) {
+  ws_send("create_profile " + profileName, log_ws);
+  set_profile(profileName);
+  update_profiles();
 }
 
 // ! Create a new file
@@ -247,6 +295,7 @@ function save() {
 // ! Function that is called once the websocket connection was established
 function ws_connected() {
   update_file_list();
+  update_profiles();
 }
 
 // ========== Startup ========== //

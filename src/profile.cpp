@@ -66,11 +66,11 @@ namespace profile
     void add_profile(String profile) {
         std::vector<std::string> list = _get_split_list();
 
-        if (std::find(list.begin(), list.end(), profile.c_str()) == list.end()) {
-            list.push_back(profile.c_str());
+        if (std::find(list.begin(), list.end(), profile.c_str()) != list.end()) {
+            return;
         }
 
-        _write_split_list(list);
+    spiffs::write(PROFILE_LIST_FILE, (profile + "\n").c_str());
     }
 
 }

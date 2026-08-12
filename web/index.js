@@ -139,9 +139,8 @@ function update_file_list() {
 }
 
 function update_profiles() {
-  get_profile();
   ws_send("list_profile", function (msg) {
-    var lines = msg.split(/\n/);
+    var lines = msg.split(/\n/).filter(i => i !== "\r" && i !=="");
 
     var tableHTML = "<thead>\n";
     tableHTML += "<tr>\n";
@@ -156,7 +155,7 @@ function update_profiles() {
       tableHTML += "<td>" + profile + "</td>\n";
       tableHTML += "<td>\n";
       tableHTML += "<button class=\"primary\" onclick=\"set_profile('" + profile + "')\">set profile</button>\n";
-      tableHTML += "<button class=\"warn\" onclick=\"delete_profile('" + profile + "')\">delete profile</button>\n";
+      tableHTML += "<button class=\"warn\" onclick=\"remove_profile('" + profile + "')\">delete profile</button>\n";
       tableHTML += "</tr>\n";
     }
 
@@ -164,6 +163,7 @@ function update_profiles() {
 
     E("profileTable").innerHTML = tableHTML;
   });
+  get_profile();
 }
 
 // ! Format SPIFFS
@@ -222,8 +222,9 @@ function read(fileName) {
 
 
 // ! Create a new profile
-function create_profile(profileName) {
-  ws_send("create_profile " + profileName, log_ws);
+function add_profile(profileName) {
+  if (profileName == "") return;
+  ws_send("add_profile " + profileName, log_ws);
   set_profile(profileName);
   update_profiles();
 }
@@ -307,6 +308,10 @@ window.addEventListener("load", function () {
 
   E("editorReload").onclick = function () {
     read(get_editor_filename());
+  };
+
+  E("profileReload").onclick = function () {
+    update_profiles();
   };
 
   E("editorSave").onclick = save;

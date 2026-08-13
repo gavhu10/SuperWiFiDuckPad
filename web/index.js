@@ -54,14 +54,58 @@ function get_profile() {
 
 function set_profile(profile) {
   ws_send("set_profile " + profile, log_ws);
+  update_profiles();
 }
 
 function remove_profile(profile) {
   ws_send("remove_profile " + profile, log_ws);
+  update_profiles();
 }
 
 function get_new_profile() {
   return E("newProfile").value;
+}
+
+function update_profiles() {
+  ws_send("list_profile", function (msg) {
+    var lines = msg.split(/\n/).filter(i => i !== "\r" && i !=="");
+
+    console.log(lines)
+
+    var tableHTML = "<thead>\n";
+    tableHTML += "<tr>\n";
+    tableHTML += "<th>Profile</th>\n";
+    tableHTML += "<th>Actions</th>\n";
+    tableHTML += "</tr>\n";
+    tableHTML += "</thead>\n";
+    tableHTML += "<tbody>\n";
+
+    for (const profile of lines) {
+      tableHTML += "<tr>\n";
+      tableHTML += "<td>" + profile + "</td>\n";
+      tableHTML += "<td>\n";
+      tableHTML += "<button class=\"primary\" onclick=\"set_profile('" + profile + "')\">set profile</button>\n";
+      tableHTML += "<button class=\"warn\" onclick=\"remove_profile('" + profile + "')\">delete profile</button>\n";
+      tableHTML += "</tr>\n";
+    }
+
+    tableHTML += "</tbody>\n";
+
+    E("profileTable").innerHTML = tableHTML;
+
+    console.log(tableHTML);
+
+    get_profile();
+    update_file_list();
+  });
+}
+
+// ! Create a new profile
+function add_profile(profileName) {
+  if (profileName == "") return;
+  ws_send("add_profile " + profileName, log_ws);
+  set_profile(profileName);
+  update_profiles();
 }
 
 // ! Update status until it's no longer "running"
@@ -96,7 +140,6 @@ function append(str) {
 
 // ! Updates file list and memory usage
 function update_file_list() {
-  get_profile();
   ws_send("mem", function (msg) {
     var lines = msg.split(/\n/);
 
@@ -117,53 +160,23 @@ function update_file_list() {
 
     file_list = "";
 
-    ws_send("ls", function (csv) {
-      var tableHTML = "<tbody id=button-grid>\n";
+    var tableHTML = "<tbody id=button-grid>\n";
 
-      for (var i = 0; i < 9; i++) {
-        var fileName = profile + i.toString();
+    for (var i = 0; i < 9; i++) {
+      var fileName = profile + i.toString();
 
-        if (i == 0 && !file_opened) {
-          read(fileName);
-        }
-        tableHTML += "<tr>\n";
-        tableHTML += "<td>\n";
-        tableHTML += "<button class=\"primary\" onclick=\"read('" + fileName + "')\">" + (i + 1).toString() + "</button>\n";
-        tableHTML += "</tr>\n";
+      if (i == 0 && !file_opened) {
+        read(fileName);
       }
-      tableHTML += "</tbody>\n";
-
-      E("scriptTable").innerHTML = tableHTML;
-    });
-  });
-}
-
-function update_profiles() {
-  ws_send("list_profile", function (msg) {
-    var lines = msg.split(/\n/).filter(i => i !== "\r" && i !=="");
-
-    var tableHTML = "<thead>\n";
-    tableHTML += "<tr>\n";
-    tableHTML += "<th>Profile</th>\n";
-    tableHTML += "<th>Actions</th>\n";
-    tableHTML += "</tr>\n";
-    tableHTML += "</thead>\n";
-    tableHTML += "<tbody>\n";
-
-    for (const profile of lines) {
       tableHTML += "<tr>\n";
-      tableHTML += "<td>" + profile + "</td>\n";
       tableHTML += "<td>\n";
-      tableHTML += "<button class=\"primary\" onclick=\"set_profile('" + profile + "')\">set profile</button>\n";
-      tableHTML += "<button class=\"warn\" onclick=\"remove_profile('" + profile + "')\">delete profile</button>\n";
+      tableHTML += "<button class=\"primary\" onclick=\"read('" + fileName + "')\">" + (i + 1).toString() + "</button>\n";
       tableHTML += "</tr>\n";
     }
-
     tableHTML += "</tbody>\n";
 
-    E("profileTable").innerHTML = tableHTML;
+    E("scriptTable").innerHTML = tableHTML;
   });
-  get_profile();
 }
 
 // ! Format SPIFFS
@@ -221,32 +234,6 @@ function read(fileName) {
 }
 
 
-// ! Create a new profile
-function add_profile(profileName) {
-  if (profileName == "") return;
-  ws_send("add_profile " + profileName, log_ws);
-  set_profile(profileName);
-  update_profiles();
-}
-
-// ! Create a new file
-function create(fileName) {
-  stop(fileName);
-
-  fileName = fixFileName(fileName);
-
-  if (file_list.includes(fileName + " ")) {
-    read(fileName);
-  } else {
-    set_editor_filename(fileName);
-    E("editor").value = "";
-
-    ws_send("create \"" + fileName + "\"", log_ws);
-    update_file_list();
-  }
-}
-
-
 function autorun(fileName) {
   ws_send("set autorun \"" + fixFileName(fileName) + "\"", log_ws);
 }
@@ -295,7 +282,6 @@ function save() {
 
 // ! Function that is called once the websocket connection was established
 function ws_connected() {
-  update_file_list();
   update_profiles();
 }
 

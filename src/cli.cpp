@@ -170,7 +170,9 @@ namespace cli {
             Command  cmd { c };
             Argument arg { cmd.getArg(0) };
 
-           profile::set_profile(arg.getValue());
+            profile::set_profile(arg.getValue());
+            String response = "> set profile \"" + arg.getValue() + "\"";
+            print(response);
         });
 
         cli.addCommand("get_profile", [](cmd* c) {
@@ -181,14 +183,18 @@ namespace cli {
             Command  cmd { c };
             Argument arg { cmd.getArg(0) };
 
-           profile::add_profile(arg.getValue());
+            profile::add_profile(arg.getValue());
+            String response = "> added profile \"" + arg.getValue() + "\"";
+            print(response);
         });
 
         cli.addSingleArgCmd("remove_profile", [](cmd* c) {
             Command  cmd { c };
             Argument arg { cmd.getArg(0) };
 
-           profile::remove_profile(arg.getValue());
+            profile::remove_profile(arg.getValue());
+            String response = "> removed profile \"" + arg.getValue() + "\"";
+            print(response);
         });
 
         cli.addCommand("list_profile", [](cmd *c) {

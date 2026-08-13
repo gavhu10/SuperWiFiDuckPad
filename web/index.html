@@ -40,7 +40,7 @@
                 <h1>Profile <a class="reload" id="profileReload">&#x21bb;</a></h1>
                 <table class="table" id="profileTable"></table>
                 <div class="row">
-                    <input placeholder="New profile name" type="text" class="smooth" value="" id="newProfile"/>
+                    <input placeholder="New profile name" autocomplete="off" type="text" class="smooth" value="" id="newProfile"/>
                     <button class="success" onclick="add_profile(get_new_profile())">create</button>
                 </div>
             </section>
@@ -51,7 +51,6 @@
             <section>
                 <h1>Editor <a class="reload" id="editorReload">&#x21bb;</a></h1>
                 <div class="row">
-                    <input placeholder="Filename /<name>" type="text" class="smooth" value="/" id="editorFile">
                     <button class="primary" id="editorDownload">download</button>
                     <button class="primary" id="editorAutorun">Enable autorun</button>
                 </div>

@@ -20,6 +20,8 @@ var unsaved_changed = false;
 // ! Flag if editor has loaded a file yet
 var file_opened = false;
 
+var editorFile = "";
+
 // ========== Global Functions ========== //
 
 // ===== Value Getters ===== //
@@ -28,11 +30,11 @@ function get_new_filename() {
 }
 
 function get_editor_filename() {
-  return E("editorFile").value;
+  return editorFile;
 }
 
 function set_editor_filename(filename) {
-  return E("editorFile").value = filename;
+  return editorFile = filename;
 }
 
 function get_editor_content() {
@@ -96,6 +98,7 @@ function update_profiles() {
     console.log(tableHTML);
 
     get_profile();
+    file_opened = false;
     update_file_list();
   });
 }

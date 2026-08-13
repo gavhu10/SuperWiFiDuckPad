@@ -65,7 +65,9 @@ function remove_profile(profile) {
 }
 
 function get_new_profile() {
-  return E("newProfile").value;
+  let newProfile = E("newProfile").value;
+  E("newProfile").value = "";
+  return newProfile;
 }
 
 function update_profiles() {

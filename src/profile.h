@@ -14,7 +14,7 @@ namespace profile {
 
     void remove_profile(String profile);
 
-    std::vector<std::string> _get_split_list();
+    std::vector<std::string> _split_list();
 
     void _write_split_list(std::vector<std::string> list);
 

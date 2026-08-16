@@ -24,12 +24,15 @@ namespace profile
     }
 
     String get_profile_list() {
-        return spiffs::readFile(PROFILE_LIST_FILE);
+        String list = spiffs::readFile(PROFILE_LIST_FILE);
+        if (list == "") {
+            return "\n";
+        }
+        return list;
     }
 
-    std::vector<std::string> _get_split_list() {
-        std::string contents = get_profile_list().c_str();
-        std::istringstream iss(contents);
+    std::vector<std::string> _split_list(std::string input) {
+        std::istringstream iss(input);
         std::vector<std::string> lines;
         std::string line;
 
@@ -53,7 +56,7 @@ namespace profile
     }
 
     void remove_profile(String profile) {
-        std::vector<std::string> list = _get_split_list();
+        auto list = _split_list(get_profile_list().c_str());
 
         auto profile_index = std::find(list.begin(), list.end(), profile.c_str());
         if (profile_index != list.end()) {
@@ -61,10 +64,18 @@ namespace profile
         }
 
         _write_split_list(list);
+
+        list = _split_list(spiffs::listDir("/").c_str());
+
+        for (std::string const& i: list) {
+            if (i.rfind(profile.c_str(), 0) == 0){
+                spiffs::remove(i.c_str());
+            }
+        }
     }
 
     void add_profile(String profile) {
-        std::vector<std::string> list = _get_split_list();
+        std::vector<std::string> list = _split_list(get_profile_list().c_str());
 
         if (std::find(list.begin(), list.end(), profile.c_str()) != list.end()) {
             return;

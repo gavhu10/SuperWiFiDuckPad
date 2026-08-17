@@ -23,8 +23,9 @@ namespace button {
             if (states[i]) {
                 String fileName = profile::get_profile() + String(i);
                 fileName.replace(" ", "-");
+                debugf("Running file %s from button\n", fileName.c_str());
                 duckscript::run(fileName.c_str());
-                delay(1000);
+                delay(500);
             }
         }
     }

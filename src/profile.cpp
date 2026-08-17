@@ -14,6 +14,7 @@ namespace profile
             return "default";
         }
         else {
+            contents.trim();
             return contents;
         }
     }

@@ -11,11 +11,14 @@ function load_settings() {
     var password = lines[1].split("=")[1];
     var channel = lines[2].split("=")[1];
     var autorun = lines[3].split("=")[1];
+    var connect_ssid = lines[4].split("=")[1];
+    var connect_password = lines[5].split("=")[1];
 
     E("ssid").innerHTML = ssid;
     E("password").innerHTML = password;
     E("channel").innerHTML = channel;
-    E("autorun").innerHTML = autorun;
+    E("connect_ssid").innerHTML = connect_ssid;
+    E("connect_password").innerHTML = connect_password;
   });
 }
 
@@ -80,6 +83,34 @@ window.addEventListener("load", function() {
       ws_send("reset", function(msg) {
         load_settings();
       });
+    }
+  };
+
+  E("edit_connect_ssid").onclick = function() {
+    var newssid = prompt("SSID (1-32 chars)", E("ssid").innerHTML);
+
+    if (newssid) {
+      if (newssid.length >= 1 && newssid.length <= 32) {
+        ws_send("set connect_ssid \"" + newssid + "\"", function(msg) {
+          load_settings();
+        });
+      } else {
+        alert("ERROR: Invalid length");
+      }
+    }
+  };
+
+  E("edit_connect_password").onclick = function() {
+    var newpassword = prompt("Password (8-64 chars)", E("password").innerHTML);
+
+    if (newpassword) {
+      if (newpassword.length >= 8 && newpassword.length <= 64) {
+        ws_send("set connect_password \"" + newpassword + "\"", function(msg) {
+          load_settings();
+        });
+      } else {
+        alert("ERROR: Invalid length");
+      }
     }
   };
 

@@ -77,17 +77,7 @@ namespace webserver {
         }
     }
 
-    // ===== PUBLIC ===== //
-    void begin() {
-        // Access Point
-        WiFi.hostname(HOSTNAME);
-
-        // WiFi.mode(WIFI_AP_STA);
-        WiFi.softAP(settings::getSSID(), settings::getPassword(), settings::getChannelNum());
-        WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
-        debugf("Started Access Point \"%s\":\"%s\"\n", settings::getSSID(), settings::getPassword());
-
-        // Webserver
+    void startServer() {
         server.on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
             request->redirect("/index.html");
         });
@@ -183,6 +173,46 @@ namespace webserver {
         // Start Server
         server.begin();
         debugln("Started Webserver");
+    }
+
+
+    void startWifi(void* _) {
+
+        debugf("Connecting to wifi with SSID \"%s\"\n", settings::getConnectSSID());
+
+        WiFi.begin(settings::getConnectSSID(), settings::getConnectPassword(), settings::getChannelNum());
+        
+        for (int i=0;++i;i<10) {
+            if (WiFi.status() == WL_CONNECTED) {
+                debugf("Connected! IP: %s\n", WiFi.localIP().toString().c_str());
+                break;
+            }
+            vTaskDelay(1000);
+        }
+
+        debugln("Ended wifi connection task");
+        vTaskDelete(NULL);
+    }
+    // ===== PUBLIC ===== //
+
+    void begin() {
+        // Access Point
+        WiFi.hostname(HOSTNAME);
+
+        WiFi.mode(WIFI_AP_STA);
+        WiFi.softAP(settings::getSSID(), settings::getPassword(), settings::getChannelNum());
+        WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
+        debugf("Started Access Point \"%s\":\"%s\"\n", settings::getSSID(), settings::getPassword());
+
+        startServer();
+        xTaskCreate(
+            startWifi,
+            "startWifi",
+            4096,
+            NULL,
+            1,
+            NULL
+        );
     }
 
     void update() {

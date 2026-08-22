@@ -22,6 +22,9 @@ namespace settings {
         char password[65];
         char channel[5];
         char autorun[65];
+        char connect_ssid[33];
+        char connect_password[65];
+
     } settings_t;
 
     settings_t data;
@@ -40,6 +43,8 @@ namespace settings {
         if (data.password[64] != 0) setPassword(WIFI_PASSWORD);
         if (data.channel[4] != 0) setChannel(WIFI_CHANNEL);
         if (data.autorun[64] != 0) setAutorun("");
+        if (data.connect_ssid[32] != 0) setConnectSSID("");
+        if (data.connect_password[64] != 0) setConnectPassword("");
     }
 
     void reset() {
@@ -48,6 +53,8 @@ namespace settings {
         setSSID(WIFI_SSID);
         setPassword(WIFI_PASSWORD);
         setChannel(WIFI_CHANNEL);
+        setConnectSSID("");
+        setConnectPassword("");
     }
 
     void save() {
@@ -69,6 +76,12 @@ namespace settings {
         s += "\n";
         s += "autorun=";
         s += getAutorun();
+        s += "\n";
+        s += "connect_ssid=";
+        s += getConnectSSID();
+        s += "\n";
+        s += "connect_password=";
+        s += getConnectPassword();
         s += "\n";
 
         return s;
@@ -95,6 +108,14 @@ namespace settings {
         return data.autorun;
     }
 
+    const char* getConnectSSID() {
+        return data.connect_ssid;
+    }
+
+    const char* getConnectPassword() {
+        return data.connect_password;
+    }
+
     void set(const char* name, const char* value) {
         if (strcmp(name, "ssid") == 0) {
             setSSID(value);
@@ -104,6 +125,10 @@ namespace settings {
             setChannel(value);
         } else if (strcmp(name, "autorun") == 0) {
             setAutorun(value);
+        } else if (strcmp(name, "connect_ssid") == 0) {
+            setConnectSSID(value);
+        } else if (strcmp(name, "connect_password") == 0) {
+            setConnectPassword(value);
         }
     }
 
@@ -142,4 +167,24 @@ namespace settings {
             save();
         }
     }
+
+    void setConnectSSID(const char* ssid) {
+        if (ssid) {
+            memset(data.connect_ssid, 0, 33);
+            strncpy(data.connect_ssid, ssid, 32);
+
+            save();
+        }
+    }
+
+    void setConnectPassword(const char* password) {
+        if (password && (strlen(password) >= 8)) {
+            memset(data.connect_password, 0, 65);
+            strncpy(data.connect_password, password, 64);
+
+            save();
+        }
+    }
+
+
 }

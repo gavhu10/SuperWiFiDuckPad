@@ -44,7 +44,7 @@ namespace settings {
         if (data.channel[4] != 0) setChannel(WIFI_CHANNEL);
         if (data.autorun[64] != 0) setAutorun("");
         if (data.connect_ssid[32] != 0) setConnectSSID("");
-        if (data.connect_password[64] != 0) setConnectPassword("");
+        if (data.connect_password[64] != 0) setConnectPassword(WIFI_PASSWORD);
     }
 
     void reset() {

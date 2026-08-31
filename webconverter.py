@@ -12,7 +12,7 @@ def get_file_content(path):
     content = file.read().encode("utf-8")
     file.close();
 
-    gzip_content = gzip.compress(content)
+    gzip_content = gzip.compress(content, mtime=0)
 
     print(f"({len(content)} -> {len(gzip_content)} byte)...", end="")
 

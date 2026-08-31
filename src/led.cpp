@@ -9,10 +9,10 @@
 
 #if defined(NEOPIXEL)
 
-#include "NeoPixel.h"
+#include <Adafruit_NeoPixel.h>
 
 namespace led {
-    NeoPixel led { NEOPIXEL_NUM, LED_PIN, NEO_GRB + NEO_KHZ800 };
+    Adafruit_NeoPixel led { NEOPIXEL_NUM, LED_PIN, NEO_GRB + NEO_KHZ800 };
 
     void begin() {
         led.begin();

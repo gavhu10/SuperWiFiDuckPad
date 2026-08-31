@@ -17,6 +17,7 @@
 #include "cli.h"
 #include "spiffs.h"
 #include "settings.h"
+#include "led.h"
 
 #include "webfiles.h"
 
@@ -182,15 +183,27 @@ namespace webserver {
 
         WiFi.begin(settings::getConnectSSID(), settings::getConnectPassword(), settings::getChannelNum());
         
-        for (int i=0;++i;i<10) {
+        for (int i=0; i<10; ++i) {
             if (WiFi.status() == WL_CONNECTED) {
                 debugf("Connected! IP: %s\n", WiFi.localIP().toString().c_str());
-                break;
+                for (int j=0; i<4; ++i) {
+                    led::setColor(0, 100, 0);
+                    vTaskDelay(pdMS_TO_TICKS(300));
+                    led::setColor(0, 0, 0);
+                    vTaskDelay(pdMS_TO_TICKS(300));
+                }
+                vTaskDelete(NULL);
             }
-            vTaskDelay(1000);
+            vTaskDelay(pdMS_TO_TICKS(1000));
         }
-
-        debugln("Ended wifi connection task");
+        debugln("Failed to connect to wifi network");
+        
+        for (int i=0; i<4; ++i) {
+            led::setColor(0, 100, 0);
+            vTaskDelay(pdMS_TO_TICKS(300));
+            led::setColor(0, 0, 0);
+            vTaskDelay(pdMS_TO_TICKS(300));
+        }
         vTaskDelete(NULL);
     }
     // ===== PUBLIC ===== //

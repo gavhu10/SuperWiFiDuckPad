@@ -17,6 +17,7 @@ void setup() {
     duckparser::beginKeyboard();
     USB.begin();
     delay(200);
+
     spiffs::begin();
     settings::begin();
     cli::begin();

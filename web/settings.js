@@ -19,6 +19,9 @@ function load_settings() {
     E("channel").innerHTML = channel;
     E("connect_ssid").innerHTML = connect_ssid;
     E("connect_password").innerHTML = connect_password;
+    ws_send("ip", function(msg) {
+      E("ip").innerHTML = msg;
+    })
   });
 }
 

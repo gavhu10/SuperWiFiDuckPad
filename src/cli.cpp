@@ -12,6 +12,9 @@
 // SimpleCLI library
 #include <SimpleCLI.h>
 
+// Ip adder show
+#include <WiFi.h>
+
 // // Get RAM (heap) usage
 // extern "C" {
 // #include "user_interface.h"
@@ -234,6 +237,10 @@ namespace cli {
             s += " byte free";
 
             print(s);
+        });
+
+        cli.addCommand("ip", [](cmd *c) {
+            print(WiFi.localIP().toString().c_str());
         });
 
         /**

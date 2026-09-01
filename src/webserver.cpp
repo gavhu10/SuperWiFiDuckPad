@@ -176,6 +176,25 @@ namespace webserver {
         debugln("Started Webserver");
     }
 
+    void flash_status(bool success) {
+        int red = 0;
+        int green = 0;
+        const int blue = 0; // blue not used yet
+
+        if (success) {
+            green = 100;
+        } else {
+            red = 100;
+        }
+
+        for (int i=0; i<4; ++i) {
+            led::setColor(red, green, blue);
+            vTaskDelay(pdMS_TO_TICKS(300));
+            led::setColor(0, 0, 0);
+            vTaskDelay(pdMS_TO_TICKS(300));
+        }
+    }
+
 
     void startWifi(void* _) {
 
@@ -186,24 +205,14 @@ namespace webserver {
         for (int i=0; i<10; ++i) {
             if (WiFi.status() == WL_CONNECTED) {
                 debugf("Connected! IP: %s\n", WiFi.localIP().toString().c_str());
-                for (int j=0; i<4; ++i) {
-                    led::setColor(0, 100, 0);
-                    vTaskDelay(pdMS_TO_TICKS(300));
-                    led::setColor(0, 0, 0);
-                    vTaskDelay(pdMS_TO_TICKS(300));
-                }
+                flash_status(true);
                 vTaskDelete(NULL);
             }
             vTaskDelay(pdMS_TO_TICKS(1000));
         }
         debugln("Failed to connect to wifi network");
         
-        for (int i=0; i<4; ++i) {
-            led::setColor(0, 100, 0);
-            vTaskDelay(pdMS_TO_TICKS(300));
-            led::setColor(0, 0, 0);
-            vTaskDelay(pdMS_TO_TICKS(300));
-        }
+        flash_status(false);
         vTaskDelete(NULL);
     }
     // ===== PUBLIC ===== //

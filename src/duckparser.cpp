@@ -253,6 +253,15 @@ namespace duckparser {
 //                ignore_delay = true;
 //            }
 
+
+            // STRINGLN (-> type each character and then press enter)
+            else if (inString || compare1(cmd->str, cmd->len, "STRINGLN", CASE_SENSETIVE)) {
+                type(line_str, line_str_len);
+
+                press("ENTER", 5);
+                release();
+            }
+
             // STRING (-> type each character)
             else if (inString || compare1(cmd->str, cmd->len, "STRING", CASE_SENSETIVE)) {
                 if (inString) {

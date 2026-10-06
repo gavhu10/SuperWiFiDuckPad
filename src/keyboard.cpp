@@ -11,7 +11,8 @@
 
 #include "USBHID.h"
 
-
+#include "USBHIDConsumerControl.h"
+#include "USB.h"
 #include "keyboard.h"
 #include "debug.h"
 
@@ -78,6 +79,8 @@ HIDKeyboard::HIDKeyboard(): hid(){
 
 void HIDKeyboard::begin(){
     hid.begin();
+    ccbrd = new USBHIDConsumerControl;
+    ccbrd->begin();
 }
 
 
@@ -265,4 +268,9 @@ void HIDKeyboard::write(const char* str, size_t len) {
         for (size_t i = 0; i<len; ++i) {
             i += write(&str[i]);
         }
+}
+
+void HIDKeyboard::pressMediaKey(uint8_t key) {
+    ccbrd->press(key);
+    ccbrd->release();
 }

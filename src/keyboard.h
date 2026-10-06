@@ -39,7 +39,7 @@ class HIDKeyboard : public USBHIDDevice {
 private:
   USBHID hid;
   static hid_locale_t* locale;
-  
+  USBHIDConsumerControl* ccbrd;
 
 public:
 
@@ -75,4 +75,7 @@ public:
 
   uint16_t _onGetDescriptor(uint8_t* buffer);
   void _onOutput(uint8_t report_id, const uint8_t* buffer, uint16_t len);
+
+  void pressMediaKey(uint8_t key);
+
 };

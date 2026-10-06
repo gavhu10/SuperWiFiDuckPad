@@ -5,6 +5,7 @@
  */
 
 #include "duckparser.h"
+#include "USBHIDConsumerControl.h"
 
 #include "config.h"
 #include "debug.h"
@@ -109,6 +110,10 @@ namespace duckparser {
         else if (compare1(str, len, "SHIFT", CASE_SENSETIVE)) keyboard.pressModifier(KEY_MOD_LSHIFT);
         else if (compare1(str, len, "ALT", CASE_SENSETIVE)) keyboard.pressModifier(KEY_MOD_LALT);
         else if (compare1(str, len, "WINDOWS", CASE_SENSETIVE) || compare1(str, len, "GUI", CASE_SENSETIVE)) keyboard.pressModifier(KEY_MOD_LMETA);
+
+        // Media keys
+        else if (compare1(str, len, "MEDIA_PLAY_PAUSE", CASE_SENSETIVE)) keyboard.pressMediaKey(CONSUMER_CONTROL_PLAY_PAUSE);
+
 
         // Utf8 character
         else keyboard.press(str);

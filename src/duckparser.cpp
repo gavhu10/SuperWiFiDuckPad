@@ -328,26 +328,26 @@ namespace duckparser {
 
             // KEYCODE
             else if (compare1(cmd->str, cmd->len, "KEYCODE", CASE_SENSETIVE)) {
-                // word_node* w = cmd->next;
-                // if (w) {
-                //     HIDKeyboard::report k;
+                word_node* w = cmd->next;
+                if (w) {
+                    KeyReport k;
 
-                //     k.modifiers = (uint8_t)toInt(w->str, w->len);
-                //     k.reserved  = 0;
-                //     w           = w->next;
+                    k.modifiers = (uint8_t)toInt(w->str, w->len);
+                    k.reserved  = 0;
+                    w           = w->next;
 
-                //     for (uint8_t i = 0; i<6; ++i) {
-                //         if (w) {
-                //             k.keys[i] = (uint8_t)toInt(w->str, w->len);
-                //             w         = w->next;
-                //         } else {
-                //             k.keys[i] = 0;
-                //         }
-                //     }
+                    for (uint8_t i = 0; i<6; ++i) {
+                        if (w) {
+                            k.keys[i] = (uint8_t)toInt(w->str, w->len);
+                            w         = w->next;
+                        } else {
+                            k.keys[i] = 0;
+                        }
+                    }
 
-                //     keyboard.send(&k);
-                //     keyboard.release();
-                // }
+                    keyboard.sendReport(&k);
+                    keyboard.releaseAll();
+                }
             }
 
             // Otherwise go through words and look for keys to press

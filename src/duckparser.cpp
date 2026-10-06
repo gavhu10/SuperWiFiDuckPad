@@ -143,6 +143,11 @@ namespace duckparser {
 
         // // Media keys
         else if (compare1(str, len, "MEDIA_PLAY_PAUSE", CASE_SENSETIVE)) pressMediaKey(CONSUMER_CONTROL_PLAY_PAUSE);
+        else if (compare1(str, len, "MEDIA_NEXT", CASE_SENSETIVE)) pressMediaKey(CONSUMER_CONTROL_SCAN_NEXT);
+        else if (compare1(str, len, "MEDIA_PREVIOUS", CASE_SENSETIVE)) pressMediaKey(CONSUMER_CONTROL_SCAN_PREVIOUS);
+        else if (compare1(str, len, "MEDIA_MUTE", CASE_SENSETIVE)) pressMediaKey(CONSUMER_CONTROL_MUTE);
+        else if (compare1(str, len, "MEDIA_VOL_INC", CASE_SENSETIVE)) pressMediaKey(CONSUMER_CONTROL_VOLUME_INCREMENT);
+        else if (compare1(str, len, "MEDIA_VOL_DEC", CASE_SENSETIVE)) pressMediaKey(CONSUMER_CONTROL_VOLUME_DECREMENT);
 
 
         // Utf8 character

@@ -145,6 +145,7 @@ function append(str) {
 
 // ! Updates file list and memory usage
 function update_file_list() {
+  console.log("updating file list")
   ws_send("mem", function (msg) {
     var lines = msg.split(/\n/);
 
@@ -163,25 +164,35 @@ function update_file_list() {
 
     E("freeMemory").innerHTML = used + " byte used (" + freepercent + "% free)";
 
+    update_file_html();
+  });
+}
+
+function update_file_html() {
+  
     file_list = "";
-
     var tableHTML = "<tbody id=button-grid>\n";
-
     for (var i = 0; i < 9; i++) {
       var fileName = profile + i.toString();
 
       if (i == 0 && !file_opened) {
-        read(fileName);
+        read(fileName, dont_update_list=true);
       }
       tableHTML += "<tr>\n";
       tableHTML += "<td>\n";
-      tableHTML += "<button class=\"primary\" onclick=\"read('" + fileName + "')\">" + (i + 1).toString() + "</button>\n";
+      console.log(editorFile);
+      console.log(fileName);
+      console.log(editorFile.endsWith(fileName));
+      tableHTML += "<button "
+      + (editorFile.endsWith(fileName) ? "class=\"warn\"" : "class=\"primary\"") 
+      + " onclick=\"read('" + fileName + "')\">" 
+      + (i + 1).toString()
+      + "</button>\n";
       tableHTML += "</tr>\n";
     }
     tableHTML += "</tbody>\n";
 
     E("scriptTable").innerHTML = tableHTML;
-  });
 }
 
 // ! Format SPIFFS
@@ -223,7 +234,7 @@ function read_stream() {
 }
 
 // ! Open stream to a file
-function read(fileName) {
+function read(fileName, dont_update_list=false) {
   stop(fileName);
 
   fileName = fixFileName(fileName);
@@ -236,6 +247,8 @@ function read(fileName) {
   read_stream(); // !< Read file contents (recursively)
 
   file_opened = true;
+
+  update_file_html();
 }
 
 

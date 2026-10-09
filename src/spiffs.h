@@ -25,17 +25,17 @@ namespace spiffs {
 
     void remove(String fileName);
     void rename(String oldName, String newName);
-    void write(String fileName, const char* str);
-    void write(String fileName, const uint8_t* buf, size_t len);
+    void write(String fileName, const char *str);
+    void write(String fileName, const uint8_t *buf, size_t len);
 
     String listDir(String dirName);
 
     String readFile(String fileName);
     void streamOpen(String fileName);
-    void streamWrite(const char* buf, size_t len);
-    size_t streamRead(char* buf, size_t len);
-    size_t streamReadUntil(char* buf, char delimiter, size_t max_len);
+    void streamWrite(const char *buf, size_t len);
+    size_t streamRead(char *buf, size_t len);
+    size_t streamReadUntil(char *buf, char delimiter, size_t max_len);
     void streamClose();
     bool streaming();
     size_t streamAvailable();
-}
+} // namespace spiffs

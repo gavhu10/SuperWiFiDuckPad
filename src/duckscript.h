@@ -18,4 +18,4 @@ namespace duckscript {
 
     bool isRunning();
     String currentScript();
-};
+}; // namespace duckscript

@@ -8,13 +8,12 @@ namespace button {
     std::array<bool, numButtons> getPressed() {
         std::array<bool, numButtons> pressed;
         int i = 0;
-        for (const int pin: buttonPins) {
+        for (const int pin : buttonPins) {
             pressed[i] = (digitalRead(pin) == LOW);
             ++i;
         }
         return pressed;
     }
-
 
     void checkButtons() {
         auto states = getPressed();
@@ -31,8 +30,8 @@ namespace button {
     }
 
     void setupButtons() {
-        for (const int pin: buttonPins) {
+        for (const int pin : buttonPins) {
             pinMode(pin, INPUT_PULLUP);
         }
     }
-}
+} // namespace button

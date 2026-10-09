@@ -11,7 +11,6 @@
 #include "USB.h"
 #include "button.h"
 
-
 void setup() {
     debug_init();
     duckparser::beginKeyboard();

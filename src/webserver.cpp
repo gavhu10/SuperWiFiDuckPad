@@ -21,8 +21,8 @@
 
 #include "webfiles.h"
 
-void reply(AsyncWebServerRequest* request, int code, const char* type, const uint8_t* data, size_t len) {
-    AsyncWebServerResponse* response =
+void reply(AsyncWebServerRequest *request, int code, const char *type, const uint8_t *data, size_t len) {
+    AsyncWebServerResponse *response =
         request->beginResponse(code, type, data, len);
 
     response->addHeader("Content-Encoding", "gzip");
@@ -31,18 +31,18 @@ void reply(AsyncWebServerRequest* request, int code, const char* type, const uin
 
 namespace webserver {
     // ===== PRIVATE ===== //
-    AsyncWebServer   server(80);
-    AsyncWebSocket   ws("/ws");
+    AsyncWebServer server(80);
+    AsyncWebSocket ws("/ws");
     AsyncEventSource events("/events");
 
-    AsyncWebSocketClient* currentClient { nullptr };
+    AsyncWebSocketClient *currentClient{nullptr};
 
     DNSServer dnsServer;
 
     bool reboot = false;
     IPAddress apIP(192, 168, 4, 1);
 
-    void wsEvent(AsyncWebSocket* server, AsyncWebSocketClient* client, AwsEventType type, void* arg, uint8_t* data, size_t len) {
+    void wsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len) {
         if (type == WS_EVT_CONNECT) {
             debugf("WS Client connected %u\n", client->id());
         }
@@ -52,7 +52,7 @@ namespace webserver {
         }
 
         else if (type == WS_EVT_ERROR) {
-            debugf("WS Client %u error(%u): %s\n", client->id(), *((uint16_t*)arg), (char*)data);
+            debugf("WS Client %u error(%u): %s\n", client->id(), *((uint16_t *)arg), (char *)data);
         }
 
         else if (type == WS_EVT_PONG) {
@@ -60,34 +60,33 @@ namespace webserver {
         }
 
         else if (type == WS_EVT_DATA) {
-            AwsFrameInfo* info = (AwsFrameInfo*)arg;
+            AwsFrameInfo *info = (AwsFrameInfo *)arg;
 
             if (info->opcode == WS_TEXT) {
-                char* msg = (char*)data;
+                char *msg = (char *)data;
                 msg[len] = 0;
 
                 debugf("Message from %u [%llu byte]=%s", client->id(), info->len, msg);
 
                 currentClient = client;
-                cli::parse(msg, [](const char* str) {
+                cli::parse(msg, [](const char *str) {
                     webserver::send(str);
-                    debugf("%s\n", str);
-                }, false);
+                    debugf("%s\n", str); }, false);
                 currentClient = nullptr;
             }
         }
     }
 
     void startServer() {
-        server.on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
+        server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
             request->redirect("/index.html");
         });
 
-        server.onNotFound([](AsyncWebServerRequest* request) {
+        server.onNotFound([](AsyncWebServerRequest *request) {
             request->redirect("/error404.html");
         });
 
-        server.on("/run", [](AsyncWebServerRequest* request) {
+        server.on("/run", [](AsyncWebServerRequest *request) {
             String message;
 
             if (request->hasParam("cmd")) {
@@ -96,9 +95,7 @@ namespace webserver {
 
             request->send(200, "text/plain", "Run: " + message);
 
-            cli::parse(message.c_str(), [](const char* str) {
-                debugf("%s\n", str);
-            }, false);
+            cli::parse(message.c_str(), [](const char *str) { debugf("%s\n", str); }, false);
         });
 
         WEBSERVER_CALLBACK;
@@ -112,34 +109,38 @@ namespace webserver {
         });
         ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
             char p[32];
-            sprintf(p, "Progress: %u%%\n", (progress/(total/100)));
+            sprintf(p, "Progress: %u%%\n", (progress / (total / 100)));
             events.send(p, "ota");
         });
         ArduinoOTA.onError([](ota_error_t error) {
-            if (error == OTA_AUTH_ERROR) events.send("Auth Failed", "ota");
-            else if (error == OTA_BEGIN_ERROR) events.send("Begin Failed", "ota");
-            else if (error == OTA_CONNECT_ERROR) events.send("Connect Failed", "ota");
-            else if (error == OTA_RECEIVE_ERROR) events.send("Recieve Failed", "ota");
-            else if (error == OTA_END_ERROR) events.send("End Failed", "ota");
+            if (error == OTA_AUTH_ERROR)
+                events.send("Auth Failed", "ota");
+            else if (error == OTA_BEGIN_ERROR)
+                events.send("Begin Failed", "ota");
+            else if (error == OTA_CONNECT_ERROR)
+                events.send("Connect Failed", "ota");
+            else if (error == OTA_RECEIVE_ERROR)
+                events.send("Recieve Failed", "ota");
+            else if (error == OTA_END_ERROR)
+                events.send("End Failed", "ota");
         });
         ArduinoOTA.setHostname(HOSTNAME);
         ArduinoOTA.begin();
 
-        events.onConnect([](AsyncEventSourceClient* client) {
+        events.onConnect([](AsyncEventSourceClient *client) {
             client->send("hello!", NULL, esp_timer_get_time(), 1000);
         });
         server.addHandler(&events);
 
         // Web OTA
-        server.on("/update", HTTP_POST, [](AsyncWebServerRequest* request) {
+        server.on("/update", HTTP_POST, [](AsyncWebServerRequest *request) {
             reboot = !Update.hasError();
 
             AsyncWebServerResponse* response;
             response = request->beginResponse(200, "text/plain", reboot ? "OK" : "FAIL");
             response->addHeader("Connection", "close");
 
-            request->send(response);
-        }, [](AsyncWebServerRequest* request, String filename, size_t index, uint8_t* data, size_t len, bool final) {
+            request->send(response); }, [](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
             if (!index) {
                 debugf("Update Start: %s\n", filename.c_str());
                 //Update.runAsync(true);
@@ -158,8 +159,7 @@ namespace webserver {
                 } else {
                     Update.printError(Serial);
                 }
-            }
-        });
+            } });
 
         dnsServer.setTTL(300);
         dnsServer.setErrorReplyCode(DNSReplyCode::ServerFailure);
@@ -187,7 +187,7 @@ namespace webserver {
             red = 100;
         }
 
-        for (int i=0; i<4; ++i) {
+        for (int i = 0; i < 4; ++i) {
             led::setColor(red, green, blue);
             vTaskDelay(pdMS_TO_TICKS(300));
             led::setColor(0, 0, 0);
@@ -195,14 +195,13 @@ namespace webserver {
         }
     }
 
-
-    void startWifi(void* _) {
+    void startWifi(void *_) {
 
         debugf("Connecting to wifi with SSID \"%s\"\n", settings::getConnectSSID());
 
         WiFi.begin(settings::getConnectSSID(), settings::getConnectPassword(), settings::getChannelNum());
-        
-        for (int i=0; i<10; ++i) {
+
+        for (int i = 0; i < 10; ++i) {
             if (WiFi.status() == WL_CONNECTED) {
                 debugf("Connected! IP: %s\n", WiFi.localIP().toString().c_str());
                 flash_status(true);
@@ -211,7 +210,7 @@ namespace webserver {
             vTaskDelay(pdMS_TO_TICKS(1000));
         }
         debugln("Failed to connect to wifi network");
-        
+
         flash_status(false);
         vTaskDelete(NULL);
     }
@@ -233,17 +232,18 @@ namespace webserver {
             4096,
             NULL,
             1,
-            NULL
-        );
+            NULL);
     }
 
     void update() {
         ArduinoOTA.handle();
-        if (reboot) ESP.restart();
+        if (reboot)
+            ESP.restart();
         dnsServer.processNextRequest();
     }
 
-    void send(const char* str) {
-        if (currentClient) currentClient->text(str);
+    void send(const char *str) {
+        if (currentClient)
+            currentClient->text(str);
     }
-}
+} // namespace webserver

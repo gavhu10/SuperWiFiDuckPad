@@ -24,9 +24,9 @@
 #define MSG_STARTED "LED 0 25 0\n"
 
 /*! ======EEPROM Settings ===== */
-#define EEPROM_SIZE       4095
-#define EEPROM_BOOT_ADDR  3210
-#define BOOT_MAGIC_NUM    1234567890
+#define EEPROM_SIZE 4095
+#define EEPROM_BOOT_ADDR 3210
+#define BOOT_MAGIC_NUM 1234567890
 
 /*! ===== WiFi Settings ===== */
 #define WIFI_SSID "wifiduck"
@@ -35,6 +35,3 @@
 
 #define HOSTNAME "wifiduck"
 #define URL "wifi.duck"
-
-
-

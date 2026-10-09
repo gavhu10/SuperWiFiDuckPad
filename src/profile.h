@@ -19,4 +19,4 @@ namespace profile {
     void _write_split_list(std::vector<std::string> list);
 
     void add_profile(String profile);
-}
+} // namespace profile

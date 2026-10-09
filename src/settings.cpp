@@ -37,14 +37,21 @@ namespace settings {
 
     void load() {
         eeprom::getObject(SETTINGS_ADDRES, data);
-        if (data.magic_num != SETTINGS_MAGIC_NUM) reset();
+        if (data.magic_num != SETTINGS_MAGIC_NUM)
+            reset();
 
-        if (data.ssid[32] != 0) setSSID(WIFI_SSID);
-        if (data.password[64] != 0) setPassword(WIFI_PASSWORD);
-        if (data.channel[4] != 0) setChannel(WIFI_CHANNEL);
-        if (data.autorun[64] != 0) setAutorun("");
-        if (data.connect_ssid[32] != 0) setConnectSSID("");
-        if (data.connect_password[64] != 0) setConnectPassword(WIFI_PASSWORD);
+        if (data.ssid[32] != 0)
+            setSSID(WIFI_SSID);
+        if (data.password[64] != 0)
+            setPassword(WIFI_PASSWORD);
+        if (data.channel[4] != 0)
+            setChannel(WIFI_CHANNEL);
+        if (data.autorun[64] != 0)
+            setAutorun("");
+        if (data.connect_ssid[32] != 0)
+            setConnectSSID("");
+        if (data.connect_password[64] != 0)
+            setConnectPassword(WIFI_PASSWORD);
     }
 
     void reset() {
@@ -87,36 +94,37 @@ namespace settings {
         return s;
     }
 
-    const char* getSSID() {
+    const char *getSSID() {
         return data.ssid;
     }
 
-    const char* getPassword() {
+    const char *getPassword() {
         return data.password;
     }
 
-    const char* getChannel() {
+    const char *getChannel() {
         return data.channel;
     }
 
     int getChannelNum() {
-        if (strcmp(data.channel, "auto") != 0) return atoi(data.channel);
+        if (strcmp(data.channel, "auto") != 0)
+            return atoi(data.channel);
         return 1;
     }
 
-    const char* getAutorun() {
+    const char *getAutorun() {
         return data.autorun;
     }
 
-    const char* getConnectSSID() {
+    const char *getConnectSSID() {
         return data.connect_ssid;
     }
 
-    const char* getConnectPassword() {
+    const char *getConnectPassword() {
         return data.connect_password;
     }
 
-    void set(const char* name, const char* value) {
+    void set(const char *name, const char *value) {
         if (strcmp(name, "ssid") == 0) {
             setSSID(value);
         } else if (strcmp(name, "password") == 0) {
@@ -132,7 +140,7 @@ namespace settings {
         }
     }
 
-    void setSSID(const char* ssid) {
+    void setSSID(const char *ssid) {
         if (ssid) {
             memset(data.ssid, 0, 33);
             strncpy(data.ssid, ssid, 32);
@@ -141,7 +149,7 @@ namespace settings {
         }
     }
 
-    void setPassword(const char* password) {
+    void setPassword(const char *password) {
         if (password && (strlen(password) >= 8)) {
             memset(data.password, 0, 65);
             strncpy(data.password, password, 64);
@@ -150,7 +158,7 @@ namespace settings {
         }
     }
 
-    void setChannel(const char* channel) {
+    void setChannel(const char *channel) {
         if (channel && ((strcmp(channel, "auto") == 0) || ((atoi(channel) >= 1) && (atoi(channel) <= 13)))) {
             memset(data.channel, 0, 5);
             strncpy(data.channel, channel, 4);
@@ -159,7 +167,7 @@ namespace settings {
         }
     }
 
-    void setAutorun(const char* autorun) {
+    void setAutorun(const char *autorun) {
         if (autorun) {
             memset(data.autorun, 0, 65);
             strncpy(data.autorun, autorun, 64);
@@ -168,7 +176,7 @@ namespace settings {
         }
     }
 
-    void setConnectSSID(const char* ssid) {
+    void setConnectSSID(const char *ssid) {
         if (ssid) {
             memset(data.connect_ssid, 0, 33);
             strncpy(data.connect_ssid, ssid, 32);
@@ -177,7 +185,7 @@ namespace settings {
         }
     }
 
-    void setConnectPassword(const char* password) {
+    void setConnectPassword(const char *password) {
         if (password && (strlen(password) >= 8)) {
             memset(data.connect_password, 0, 65);
             strncpy(data.connect_password, password, 64);
@@ -186,5 +194,4 @@ namespace settings {
         }
     }
 
-
-}
+} // namespace settings

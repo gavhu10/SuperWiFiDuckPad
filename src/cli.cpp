@@ -27,10 +27,9 @@
 #include "config.h"
 #include "profile.h"
 
-
 namespace cli {
     // ===== PRIVATE ===== //
-    SimpleCLI cli;           // !< Instance of SimpleCLI library
+    SimpleCLI cli; // !< Instance of SimpleCLI library
 
     PrintFunction printfunc; // !< Function used to print output
 
@@ -43,8 +42,9 @@ namespace cli {
      *
      * \param s String to printed
      */
-    inline void print(const String& s) {
-        if (printfunc) printfunc(s.c_str());
+    inline void print(const String &s) {
+        if (printfunc)
+            printfunc(s.c_str());
     }
 
     // ===== PUBLIC ===== //
@@ -56,7 +56,7 @@ namespace cli {
          * And 'Did you mean "<command-help>"?'
          * if the command name matched, but the arguments didn't
          */
-        cli.setOnError([](cmd_error* e) {
+        cli.setOnError([](cmd_error *e) {
             CommandError cmdError(e); // Create wrapper object
 
             String res = "ERROR: " + cmdError.toString();
@@ -75,7 +75,7 @@ namespace cli {
          *
          * Prints all available commands with their arguments
          */
-        cli.addCommand("help", [](cmd* c) {
+        cli.addCommand("help", [](cmd *c) {
             print(cli.toString());
         });
 
@@ -84,9 +84,9 @@ namespace cli {
          *
          * Prints number of free bytes in the RAM
          */
-        cli.addCommand("ram", [](cmd* c) {
+        cli.addCommand("ram", [](cmd *c) {
             size_t freeRam = ESP.getFreeHeap();
-            String res     = String(freeRam) + " bytes available";
+            String res = String(freeRam) + " bytes available";
             print(res);
         });
 
@@ -95,7 +95,7 @@ namespace cli {
          *
          * Prints the current version number
          */
-        cli.addCommand("version", [](cmd* c) {
+        cli.addCommand("version", [](cmd *c) {
             String res = "Version " + String(VERSION);
             print(res);
         });
@@ -105,7 +105,7 @@ namespace cli {
          *
          * Prints all settings with their values
          */
-        cli.addCommand("settings", [](cmd* c) {
+        cli.addCommand("settings", [](cmd *c) {
             settings::load();
             print(settings::toString());
         });
@@ -118,23 +118,22 @@ namespace cli {
          * \param name name of the setting
          * \param vale new value for the setting
          */
-        Command cmdSet {
-            cli.addCommand("set", [](cmd* c) {
-                Command  cmd { c };
+        Command cmdSet{
+            cli.addCommand("set", [](cmd *c) {
+                Command cmd{c};
 
-                Argument argName { cmd.getArg(0) };
-                Argument argValue { cmd.getArg(1) };
+                Argument argName{cmd.getArg(0)};
+                Argument argValue{cmd.getArg(1)};
 
-                String name { argName.getValue() };
-                String value { argValue.getValue() };
+                String name{argName.getValue()};
+                String value{argValue.getValue()};
 
                 settings::set(name.c_str(), value.c_str());
 
                 String response = "> set \"" + name + "\" to \"" + value + "\"";
 
                 print(response);
-            })
-        };
+            })};
         cmdSet.addPosArg("n/ame");
         cmdSet.addPosArg("v/alue");
 
@@ -143,7 +142,7 @@ namespace cli {
          *
          * Resets all settings and prints out the defaul values
          */
-        cli.addCommand("reset", [](cmd* c) {
+        cli.addCommand("reset", [](cmd *c) {
             settings::reset();
             print(settings::toString());
         });
@@ -156,7 +155,7 @@ namespace cli {
          * connected
          * i2c connection problem
          */
-        cli.addCommand("status", [](cmd* c) {
+        cli.addCommand("status", [](cmd *c) {
             if (true) {
                 if (duckscript::isRunning()) {
                     String s = "running " + duckscript::currentScript();
@@ -169,31 +168,31 @@ namespace cli {
             }
         });
 
-        cli.addSingleArgCmd("set_profile", [](cmd* c) {
-            Command  cmd { c };
-            Argument arg { cmd.getArg(0) };
+        cli.addSingleArgCmd("set_profile", [](cmd *c) {
+            Command cmd{c};
+            Argument arg{cmd.getArg(0)};
 
             profile::set_profile(arg.getValue());
             String response = "> set profile \"" + arg.getValue() + "\"";
             print(response);
         });
 
-        cli.addCommand("get_profile", [](cmd* c) {
+        cli.addCommand("get_profile", [](cmd *c) {
             print(profile::get_profile());
         });
 
-        cli.addSingleArgCmd("add_profile", [](cmd* c) {
-            Command  cmd { c };
-            Argument arg { cmd.getArg(0) };
+        cli.addSingleArgCmd("add_profile", [](cmd *c) {
+            Command cmd{c};
+            Argument arg{cmd.getArg(0)};
 
             profile::add_profile(arg.getValue());
             String response = "> added profile \"" + arg.getValue() + "\"";
             print(response);
         });
 
-        cli.addSingleArgCmd("remove_profile", [](cmd* c) {
-            Command  cmd { c };
-            Argument arg { cmd.getArg(0) };
+        cli.addSingleArgCmd("remove_profile", [](cmd *c) {
+            Command cmd{c};
+            Argument arg{cmd.getArg(0)};
 
             profile::remove_profile(arg.getValue());
             String response = "> removed profile \"" + arg.getValue() + "\"";
@@ -203,7 +202,6 @@ namespace cli {
         cli.addCommand("list_profile", [](cmd *c) {
             print(profile::get_profile_list());
         });
-        
 
         /**
          * \brief Create ls command
@@ -212,9 +210,9 @@ namespace cli {
          *
          * \param * Path to directory
          */
-        cli.addSingleArgCmd("ls", [](cmd* c) {
-            Command  cmd { c };
-            Argument arg { cmd.getArg(0) };
+        cli.addSingleArgCmd("ls", [](cmd *c) {
+            Command cmd{c};
+            Argument arg{cmd.getArg(0)};
 
             String res = spiffs::listDir(arg.getValue());
             print(res);
@@ -225,7 +223,7 @@ namespace cli {
          *
          * Prints memory usage of SPIFFS
          */
-        cli.addCommand("mem", [](cmd* c) {
+        cli.addCommand("mem", [](cmd *c) {
             String s = "";
             s.reserve(64);
 
@@ -250,9 +248,9 @@ namespace cli {
          *
          * \param * Path to file
          */
-        cli.addSingleArgCmd("cat", [](cmd* c) {
-            Command  cmd { c };
-            Argument arg { cmd.getArg(0) };
+        cli.addSingleArgCmd("cat", [](cmd *c) {
+            Command cmd{c};
+            Argument arg{cmd.getArg(0)};
 
             print(spiffs::readFile(arg.getValue()));
         });
@@ -264,9 +262,9 @@ namespace cli {
          *
          * \param * Path to script in SPIFFS
          */
-        cli.addSingleArgCmd("run", [](cmd* c) {
-            Command  cmd { c };
-            Argument arg { cmd.getArg(0) };
+        cli.addSingleArgCmd("run", [](cmd *c) {
+            Command cmd{c};
+            Argument arg{cmd.getArg(0)};
 
             duckscript::run(arg.getValue());
 
@@ -282,9 +280,9 @@ namespace cli {
          * \param * Path to specific ducky script to stop
          *          If no path is given, stop whatever script is active
          */
-        cli.addSingleArgCmd("stop", [](cmd* c) {
-            Command  cmd { c };
-            Argument arg { cmd.getArg(0) };
+        cli.addSingleArgCmd("stop", [](cmd *c) {
+            Command cmd{c};
+            Argument arg{cmd.getArg(0)};
 
             duckscript::stop(arg.getValue());
 
@@ -299,9 +297,9 @@ namespace cli {
          *
          * \param * Path with filename
          */
-        cli.addSingleArgCmd("create", [](cmd* c) {
-            Command  cmd { c };
-            Argument arg { cmd.getArg(0) };
+        cli.addSingleArgCmd("create", [](cmd *c) {
+            Command cmd{c};
+            Argument arg{cmd.getArg(0)};
 
             spiffs::create(arg.getValue());
 
@@ -316,9 +314,9 @@ namespace cli {
          *
          * \param * Path to file
          */
-        cli.addSingleArgCmd("remove", [](cmd* c) {
-            Command  cmd { c };
-            Argument arg { cmd.getArg(0) };
+        cli.addSingleArgCmd("remove", [](cmd *c) {
+            Command cmd{c};
+            Argument arg{cmd.getArg(0)};
 
             spiffs::remove(arg.getValue());
 
@@ -334,22 +332,21 @@ namespace cli {
          * \param fileA Old path with filename
          * \param fileB New path with filename
          */
-        Command cmdRename {
-            cli.addCommand("rename", [](cmd* c) {
-                Command  cmd { c };
+        Command cmdRename{
+            cli.addCommand("rename", [](cmd *c) {
+                Command cmd{c};
 
-                Argument argA { cmd.getArg(0) };
-                Argument argB { cmd.getArg(1) };
+                Argument argA{cmd.getArg(0)};
+                Argument argB{cmd.getArg(1)};
 
-                String fileA { argA.getValue() };
-                String fileB { argB.getValue() };
+                String fileA{argA.getValue()};
+                String fileB{argB.getValue()};
 
                 spiffs::rename(fileA, fileB);
 
                 String response = "> renamed \"" + fileA + "\" to \"" + fileB + "\"";
                 print(response);
-            })
-        };
+            })};
         cmdRename.addPosArg("fileA,a");
         cmdRename.addPosArg("fileB,b");
 
@@ -361,22 +358,21 @@ namespace cli {
          * \param file    Path to file
          * \param content String to write
          */
-        Command cmdWrite {
-            cli.addCommand("write", [](cmd* c) {
-                Command  cmd { c };
+        Command cmdWrite{
+            cli.addCommand("write", [](cmd *c) {
+                Command cmd{c};
 
-                Argument argFileName { cmd.getArg(0) };
-                Argument argContent { cmd.getArg(1) };
+                Argument argFileName{cmd.getArg(0)};
+                Argument argContent{cmd.getArg(1)};
 
-                String fileName { argFileName.getValue() };
-                String content { argContent.getValue() };
+                String fileName{argFileName.getValue()};
+                String content{argContent.getValue()};
 
-                spiffs::write(fileName, (uint8_t*)content.c_str(), content.length());
+                spiffs::write(fileName, (uint8_t *)content.c_str(), content.length());
 
                 String response = "> wrote to file \"" + fileName + "\"";
                 print(response);
-            })
-        };
+            })};
         cmdWrite.addPosArg("f/ile");
         cmdWrite.addPosArg("c/ontent");
 
@@ -385,7 +381,7 @@ namespace cli {
          *
          * Formats SPIFFS
          */
-        cli.addCommand("format", [](cmd* c) {
+        cli.addCommand("format", [](cmd *c) {
             spiffs::format();
             print("Formatted SPIFFS");
         });
@@ -399,9 +395,9 @@ namespace cli {
          *
          * \param * Path to file
          */
-        cli.addSingleArgCmd("stream", [](cmd* c) {
-            Command  cmd { c };
-            Argument arg { cmd.getArg(0) };
+        cli.addSingleArgCmd("stream", [](cmd *c) {
+            Command cmd{c};
+            Argument arg{cmd.getArg(0)};
 
             spiffs::streamOpen(arg.getValue());
 
@@ -414,7 +410,7 @@ namespace cli {
          *
          * Closes file stream
          */
-        cli.addCommand("close", [](cmd* c) {
+        cli.addCommand("close", [](cmd *c) {
             spiffs::streamClose();
             print("> closed stream");
         });
@@ -424,7 +420,7 @@ namespace cli {
          *
          * Reads from file stream (1024 characters)
          */
-        cli.addCommand("read", [](cmd* c) {
+        cli.addCommand("read", [](cmd *c) {
             if (spiffs::streamAvailable()) {
                 size_t len = 1024;
 
@@ -439,7 +435,7 @@ namespace cli {
         });
     }
 
-    void parse(const char* input, PrintFunction printfunc, bool echo) {
+    void parse(const char *input, PrintFunction printfunc, bool echo) {
         cli::printfunc = printfunc;
 
         if (spiffs::streaming() &&
@@ -456,4 +452,4 @@ namespace cli {
             cli.parse(input);
         }
     }
-}
+} // namespace cli

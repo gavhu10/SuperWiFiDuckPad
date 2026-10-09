@@ -5,15 +5,12 @@
 #include "spiffs.h"
 #include "profile.h"
 
-namespace profile
-{
-    String get_profile()
-    {
+namespace profile {
+    String get_profile() {
         String contents = spiffs::readFile(PROFILE_FILE);
-        if (contents == ""){
+        if (contents == "") {
             return "default";
-        }
-        else {
+        } else {
             contents.trim();
             return contents;
         }
@@ -42,12 +39,12 @@ namespace profile
         }
 
         return lines;
-    }  
-    
+    }
+
     void _write_split_list(std::vector<std::string> list) {
         std::string ret;
 
-        for (const auto i: list) {
+        for (const auto i : list) {
             ret += i;
             ret += "\n";
         }
@@ -68,8 +65,8 @@ namespace profile
 
         list = _split_list(spiffs::listDir("/").c_str());
 
-        for (std::string const& i: list) {
-            if (i.rfind(profile.c_str(), 0) == 0){
+        for (std::string const &i : list) {
+            if (i.rfind(profile.c_str(), 0) == 0) {
                 spiffs::remove(i.c_str());
             }
         }
@@ -82,7 +79,7 @@ namespace profile
             return;
         }
 
-    spiffs::write(PROFILE_LIST_FILE, (profile + "\n").c_str());
+        spiffs::write(PROFILE_LIST_FILE, (profile + "\n").c_str());
     }
 
-}
+} // namespace profile

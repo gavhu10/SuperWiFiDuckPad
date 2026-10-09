@@ -16,21 +16,21 @@ namespace settings {
 
     String toString();
 
-    const char* getSSID();
-    const char* getPassword();
-    const char* getChannel();
-    const char* getAutorun();
-    const char* getConnectSSID();
-    const char* getConnectPassword();
+    const char *getSSID();
+    const char *getPassword();
+    const char *getChannel();
+    const char *getAutorun();
+    const char *getConnectSSID();
+    const char *getConnectPassword();
 
     int getChannelNum();
 
-    void set(const char* name, const char* value);
+    void set(const char *name, const char *value);
 
-    void setSSID(const char* ssid);
-    void setPassword(const char* password);
-    void setChannel(const char* channel);
-    void setAutorun(const char* autorun);
-    void setConnectSSID(const char* ssid);
-    void setConnectPassword(const char* password);
-}
+    void setSSID(const char *ssid);
+    void setPassword(const char *password);
+    void setChannel(const char *channel);
+    void setAutorun(const char *autorun);
+    void setConnectSSID(const char *ssid);
+    void setConnectPassword(const char *password);
+} // namespace settings

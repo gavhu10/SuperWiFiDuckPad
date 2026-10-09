@@ -13,4 +13,4 @@ namespace button {
     void checkButtons();
 
     void setupButtons();
-}
+} // namespace button

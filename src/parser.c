@@ -18,11 +18,13 @@ char to_lower1(char c) {
     return c;
 }
 
-int compare1(const char* user_str, size_t user_str_len, const char* templ_str, int case_sensetive) {
-    if (user_str == templ_str) return COMPARE_EQUAL;
+int compare1(const char *user_str, size_t user_str_len, const char *templ_str, int case_sensetive) {
+    if (user_str == templ_str)
+        return COMPARE_EQUAL;
 
     // null check string pointers
-    if (!user_str || !templ_str) return COMPARE_UNEQUAL;
+    if (!user_str || !templ_str)
+        return COMPARE_UNEQUAL;
 
     // string lengths
     size_t str_len = user_str_len; // strlen(user_str);
@@ -32,21 +34,24 @@ int compare1(const char* user_str, size_t user_str_len, const char* templ_str, i
     if (str_len == key_len) {
         for (size_t i = 0; i < key_len; i++) {
             if (case_sensetive == COMPARE_CASE_SENSETIVE) {
-                if (user_str[i] != templ_str[i]) return COMPARE_UNEQUAL;
+                if (user_str[i] != templ_str[i])
+                    return COMPARE_UNEQUAL;
             } else {
-                if (to_lower1(user_str[i]) != to_lower1(templ_str[i])) return COMPARE_UNEQUAL;
+                if (to_lower1(user_str[i]) != to_lower1(templ_str[i]))
+                    return COMPARE_UNEQUAL;
             }
         }
         return COMPARE_EQUAL;
     }
 
     // string can't be longer than templ_str (but can be smaller because of  '/' and ',')
-    if (str_len > key_len) return COMPARE_UNEQUAL;
+    if (str_len > key_len)
+        return COMPARE_UNEQUAL;
 
     unsigned int res_i = 0;
-    unsigned int a     = 0;
-    unsigned int b     = 0;
-    unsigned int res   = 1;
+    unsigned int a = 0;
+    unsigned int b = 0;
+    unsigned int res = 1;
 
     while (a < str_len && b < key_len) {
         if (templ_str[b] == '/') {
@@ -61,9 +66,11 @@ int compare1(const char* user_str, size_t user_str_len, const char* templ_str, i
 
         // compare1 character
         if (case_sensetive == COMPARE_CASE_SENSETIVE) {
-            if (user_str[a] != templ_str[b]) res = 0;
+            if (user_str[a] != templ_str[b])
+                res = 0;
         } else {
-            if (to_lower1(user_str[a]) != to_lower1(templ_str[b])) res = 0;
+            if (to_lower1(user_str[a]) != to_lower1(templ_str[b]))
+                res = 0;
         }
 
         // comparison incorrect or string checked until the end and templ_str not checked until the end
@@ -72,7 +79,8 @@ int compare1(const char* user_str, size_t user_str_len, const char* templ_str, i
                      (templ_str[b + 1] != '/') &&
                      (templ_str[b + 1] != '\0'))) {
             // fast forward to next comma
-            while (b < key_len && templ_str[b] != ',') b++;
+            while (b < key_len && templ_str[b] != ',')
+                b++;
             res = 1;
         } else {
             // otherwise icrement indices
@@ -85,29 +93,30 @@ int compare1(const char* user_str, size_t user_str_len, const char* templ_str, i
     if (res && (a == str_len) &&
         ((templ_str[b] == ',') ||
          (templ_str[b] == '/') ||
-         (templ_str[b] == '\0'))) return COMPARE_EQUAL;  // res_i
+         (templ_str[b] == '\0')))
+        return COMPARE_EQUAL; // res_i
 
     return COMPARE_UNEQUAL;
 }
 
 // ===== Word Node ===== //
-word_node* word_node_create1(const char* str, size_t len) {
-    word_node* n = (word_node*)malloc(sizeof(word_node));
+word_node *word_node_create1(const char *str, size_t len) {
+    word_node *n = (word_node *)malloc(sizeof(word_node));
 
-    n->str  = str;
-    n->len  = len;
+    n->str = str;
+    n->len = len;
     n->next = NULL;
     return n;
 }
 
-word_node* word_node_destroy1(word_node* n) {
+word_node *word_node_destroy1(word_node *n) {
     if (n) {
         free(n);
     }
     return NULL;
 }
 
-word_node* word_node_destroy1_rec(word_node* n) {
+word_node *word_node_destroy1_rec(word_node *n) {
     if (n) {
         word_node_destroy1_rec(n->next);
         word_node_destroy1(n);
@@ -116,16 +125,16 @@ word_node* word_node_destroy1_rec(word_node* n) {
 }
 
 // ===== Word List ===== //
-word_list* word_list_create1() {
-    word_list* l = (word_list*)malloc(sizeof(word_list));
+word_list *word_list_create1() {
+    word_list *l = (word_list *)malloc(sizeof(word_list));
 
     l->first = NULL;
-    l->last  = NULL;
-    l->size  = 0;
+    l->last = NULL;
+    l->size = 0;
     return l;
 }
 
-word_list* word_list_destroy1(word_list* l) {
+word_list *word_list_destroy1(word_list *l) {
     if (l) {
         word_node_destroy1_rec(l->first);
         free(l);
@@ -133,7 +142,7 @@ word_list* word_list_destroy1(word_list* l) {
     return NULL;
 }
 
-void word_list_push1(word_list* l, word_node* n) {
+void word_list_push1(word_list *l, word_node *n) {
     if (l && n) {
         if (l->last) {
             l->last->next = n;
@@ -146,11 +155,12 @@ void word_list_push1(word_list* l, word_node* n) {
     }
 }
 
-word_node* word_list_get1(word_list* l, size_t i) {
-    if (!l) return NULL;
+word_node *word_list_get1(word_list *l, size_t i) {
+    if (!l)
+        return NULL;
 
     size_t j;
-    word_node* h = l->first;
+    word_node *h = l->first;
 
     for (j = 0; j < i && h; ++j) {
         h = h->next;
@@ -160,18 +170,18 @@ word_node* word_list_get1(word_list* l, size_t i) {
 }
 
 // ===== Line Node ==== //
-line_node* line_node_create1(const char* str, size_t len) {
-    line_node* n = (line_node*)malloc(sizeof(line_node));
+line_node *line_node_create1(const char *str, size_t len) {
+    line_node *n = (line_node *)malloc(sizeof(line_node));
 
-    n->str   = str;
-    n->len   = len;
+    n->str = str;
+    n->len = len;
     n->words = NULL;
-    n->next  = NULL;
+    n->next = NULL;
 
     return n;
 }
 
-word_node* line_node_destroy1(line_node* n) {
+word_node *line_node_destroy1(line_node *n) {
     if (n) {
         word_list_destroy1(n->words);
         free(n);
@@ -179,7 +189,7 @@ word_node* line_node_destroy1(line_node* n) {
     return NULL;
 }
 
-word_node* line_node_destroy1_rec(line_node* n) {
+word_node *line_node_destroy1_rec(line_node *n) {
     if (n) {
         line_node_destroy1_rec(n->next);
         line_node_destroy1(n);
@@ -188,17 +198,17 @@ word_node* line_node_destroy1_rec(line_node* n) {
 }
 
 // ===== Line List ===== //
-line_list* line_list_create1() {
-    line_list* l = (line_list*)malloc(sizeof(line_list));
+line_list *line_list_create1() {
+    line_list *l = (line_list *)malloc(sizeof(line_list));
 
     l->first = NULL;
-    l->last  = NULL;
-    l->size  = 0;
+    l->last = NULL;
+    l->size = 0;
 
     return l;
 }
 
-line_list* line_list_destroy1(line_list* l) {
+line_list *line_list_destroy1(line_list *l) {
     if (l) {
         line_node_destroy1_rec(l->first);
         free(l);
@@ -206,7 +216,7 @@ line_list* line_list_destroy1(line_list* l) {
     return NULL;
 }
 
-void line_list_push1(line_list* l, line_node* n) {
+void line_list_push1(line_list *l, line_node *n) {
     if (l && n) {
         if (l->last) {
             l->last->next = n;
@@ -219,11 +229,12 @@ void line_list_push1(line_list* l, line_node* n) {
     }
 }
 
-line_node* line_list_get1(line_list* l, size_t i) {
-    if (!l) return NULL;
+line_node *line_list_get1(line_list *l, size_t i) {
+    if (!l)
+        return NULL;
 
     size_t j;
-    line_node* h = l->first;
+    line_node *h = l->first;
 
     for (j = 0; j < i && h; ++j) {
         h = h->next;
@@ -233,18 +244,19 @@ line_node* line_list_get1(line_list* l, size_t i) {
 }
 
 // ===== Parser ===== //
-word_list* parse_words1(const char* str, size_t len) {
-    word_list* l = word_list_create1();
+word_list *parse_words1(const char *str, size_t len) {
+    word_list *l = word_list_create1();
 
-    if (len == 0) return l;
+    if (len == 0)
+        return l;
 
     // Go through string and look for space to split it into words
-    word_node* n = NULL;
+    word_node *n = NULL;
 
     size_t i = 0; // current index
     size_t j = 0; // start index of word
 
-    int escaped      = 0;
+    int escaped = 0;
     int ignore_space = 0;
 
     for (i = 0; i <= len; ++i) {
@@ -270,27 +282,28 @@ word_list* parse_words1(const char* str, size_t len) {
     return l;
 }
 
-line_list* parse_lines1(const char* str, size_t len) {
-    line_list* l = line_list_create1();
+line_list *parse_lines1(const char *str, size_t len) {
+    line_list *l = line_list_create1();
 
-    if (len == 0) return l;
+    if (len == 0)
+        return l;
 
     // Go through string and look for \r and \n to split it into lines
-    line_node* n = NULL;
+    line_node *n = NULL;
 
     size_t stri = 0; // current index
-    size_t ls   = 0; // start index of line
+    size_t ls = 0;   // start index of line
 
-    bool escaped   = false;
+    bool escaped = false;
     bool in_quotes = false;
     bool delimiter = false;
     bool linebreak = false;
     bool endofline = false;
 
     for (stri = 0; stri <= len; ++stri) {
-        char prev = stri > 0 ? str[stri-1] : 0;
+        char prev = stri > 0 ? str[stri - 1] : 0;
         char curr = str[stri];
-        char next = str[stri+1];
+        char next = str[stri + 1];
 
         escaped = prev == '\\';
 
@@ -307,14 +320,15 @@ line_list* parse_lines1(const char* str, size_t len) {
 
             // for every line, parse_words1 and add to list
             if (llen > 0) {
-                n        = line_node_create1(&str[ls], llen);
+                n = line_node_create1(&str[ls], llen);
                 n->words = parse_words1(&str[ls], llen);
                 line_list_push1(l, n);
             }
 
-            if (delimiter) ++stri;
+            if (delimiter)
+                ++stri;
 
-            ls = stri+1; // reset start index of line
+            ls = stri + 1; // reset start index of line
         }
     }
 

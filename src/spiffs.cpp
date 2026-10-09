@@ -8,12 +8,11 @@
 #include "config.h"
 #include "debug.h"
 
-
 namespace spiffs {
     File streamFile;
 
     // ===== PRIVATE ===== //
-    void fixPath(String& path) {
+    void fixPath(String &path) {
         if (!path.startsWith("/")) {
             path = "/" + path;
         }
@@ -106,7 +105,7 @@ namespace spiffs {
         LittleFS.rename(oldName, newName);
     }
 
-    void write(String fileName, const char* str) {
+    void write(String fileName, const char *str) {
         ESP_LOGE("", "write!!!!!!");
         File f = open(fileName);
 
@@ -119,7 +118,7 @@ namespace spiffs {
         }
     }
 
-    void write(String fileName, const uint8_t* buf, size_t len) {
+    void write(String fileName, const uint8_t *buf, size_t len) {
         ESP_LOGE("", "write!!!!!! utf8");
         File f = open(fileName);
 
@@ -157,20 +156,19 @@ namespace spiffs {
         return res;
     }
 
-
     String readFile(String fileName) {
         String ret;
 
         File f = spiffs::open(fileName);
 
-        int buf_size { 256 };
+        int buf_size{256};
         char buffer[buf_size];
 
         while (f && f.available()) {
-            for (size_t i = 0; i<buf_size; ++i) {
-                if (!f.available() || (i == buf_size-1)) {
+            for (size_t i = 0; i < buf_size; ++i) {
+                if (!f.available() || (i == buf_size - 1)) {
                     buffer[i] = '\0';
-                    i         = buf_size;
+                    i = buf_size;
                 } else {
                     buffer[i] = f.read();
                 }
@@ -184,21 +182,25 @@ namespace spiffs {
     void streamOpen(String fileName) {
         streamClose();
         streamFile = open(fileName);
-        if (!streamFile) debugln("ERROR: No stream file open");
-        else ESP_LOGI("", "File opened!");
+        if (!streamFile)
+            debugln("ERROR: No stream file open");
+        else
+            ESP_LOGI("", "File opened!");
     }
 
-    void streamWrite(const char* buf, size_t len) {
-        if (streamFile) streamFile.write((uint8_t*)buf, len);
-        else debugln("ERROR: No stream file open");
+    void streamWrite(const char *buf, size_t len) {
+        if (streamFile)
+            streamFile.write((uint8_t *)buf, len);
+        else
+            debugln("ERROR: No stream file open");
     }
 
-    size_t streamRead(char* buf, size_t len) {
+    size_t streamRead(char *buf, size_t len) {
         if (streamFile) {
             size_t i;
 
-            for (i = 0; i<len; ++i) {
-                if (!streamFile.available() || (i == len-1)) {
+            for (i = 0; i < len; ++i) {
+                if (!streamFile.available() || (i == len - 1)) {
                     buf[i] = '\0';
                     break;
                 } else {
@@ -215,17 +217,17 @@ namespace spiffs {
         }
     }
 
-    size_t streamReadUntil(char* buf, char delimiter, size_t max_len) {
+    size_t streamReadUntil(char *buf, char delimiter, size_t max_len) {
         if (streamFile) {
             size_t i;
-            char   c = 'x';
+            char c = 'x';
 
-            for (i = 0; i<max_len; ++i) {
-                if ((c == delimiter) || !streamFile.available() || (i == max_len-1)) {
+            for (i = 0; i < max_len; ++i) {
+                if ((c == delimiter) || !streamFile.available() || (i == max_len - 1)) {
                     buf[i] = '\0';
                     break;
                 } else {
-                    c      = streamFile.read();
+                    c = streamFile.read();
                     buf[i] = c;
                 }
             }
@@ -246,7 +248,8 @@ namespace spiffs {
     }
 
     size_t streamAvailable() {
-        if (!streamFile) return 0;
+        if (!streamFile)
+            return 0;
         return streamFile.available();
     }
-}
+} // namespace spiffs

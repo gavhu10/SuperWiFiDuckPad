@@ -7,7 +7,6 @@
 #include "duckscript.h"
 #include "duckparser.h"
 
-
 #include "config.h"
 #include "debug.h"
 
@@ -17,41 +16,40 @@ namespace duckscript {
 
     File f;
 
-    char * prevMessage    { NULL };
-    size_t prevMessageLen { 0 };
+    char *prevMessage{NULL};
+    size_t prevMessageLen{0};
 
-    std::atomic_bool running { false };
+    std::atomic_bool running{false};
 
+    static void runTask(void *parameter) {
 
-    static void runTask(void* parameter) {
-        
-        String* fileNamePtr = (String*) parameter;
+        String *fileNamePtr = (String *)parameter;
         String fileName = *fileNamePtr;
-        delete fileNamePtr;  // Free the heap memory
+        delete fileNamePtr; // Free the heap memory
 
         if (fileName.length() > 0) {
             if (!running.exchange(true)) {
                 debugf("Run file %s\n", fileName.c_str());
-                f       = spiffs::open(fileName);
+                f = spiffs::open(fileName);
                 nextLine();
             }
         }
 
-        vTaskDelete(NULL);  // Delete this task when done
+        vTaskDelete(NULL); // Delete this task when done
     }
 
     void run(String fileName) {
         // Create a heap copy of fileName
-        String* fileNamePtr = new String(fileName);
+        String *fileNamePtr = new String(fileName);
 
         // Create a new task
         xTaskCreate(
-                runTask,               // Function that should be executed
-                "runDuckScriptTask",   // Name of the task
-                4096,                  // Stack size in words
-                fileNamePtr,           // Parameter to pass to the task
-                1,                     // Priority
-                NULL                   // Task handle
+            runTask,             // Function that should be executed
+            "runDuckScriptTask", // Name of the task
+            4096,                // Stack size in words
+            fileNamePtr,         // Parameter to pass to the task
+            1,                   // Priority
+            NULL                 // Task handle
         );
     }
 
@@ -70,7 +68,7 @@ namespace duckscript {
             }
 
             char buf[BUFFER_SIZE];
-            unsigned int buf_i =  0;
+            unsigned int buf_i = 0;
             bool eol = false; // End of line
 
             // Read a line into the buffer
@@ -81,11 +79,12 @@ namespace duckscript {
                 ++buf_i;
             }
 
-            if (!eol) debugln();
+            if (!eol)
+                debugln();
 
-            if (strncmp((char*)buf, "REPEAT", _min(buf_i, 6)) == 0 || strncmp((char*)buf, "REPLAY", _min(buf_i, 6)) == 0) {
+            if (strncmp((char *)buf, "REPEAT", _min(buf_i, 6)) == 0 || strncmp((char *)buf, "REPLAY", _min(buf_i, 6)) == 0) {
                 // Extract repeat count if available
-                char* pch = strtok((char*)buf + 6, " ");
+                char *pch = strtok((char *)buf + 6, " ");
                 int repeatCount = atoi(pch);
                 if (repeatCount <= 0) {
                     repeatCount = 1;
@@ -99,9 +98,10 @@ namespace duckscript {
                 }
             } else {
                 // Store this as the previous message
-                if (prevMessage) free(prevMessage);
+                if (prevMessage)
+                    free(prevMessage);
                 prevMessageLen = buf_i;
-                prevMessage = (char*)malloc(prevMessageLen + 1);
+                prevMessage = (char *)malloc(prevMessageLen + 1);
                 memcpy(prevMessage, buf, buf_i);
                 prevMessage[buf_i] = '\0';
 
@@ -113,14 +113,16 @@ namespace duckscript {
 
     void stopAll() {
         if (running) {
-            if (f) f.close();
+            if (f)
+                f.close();
             running = false;
             debugln("Stopped script");
         }
     }
 
     void stop(String fileName) {
-        if (fileName.length() == 0) stopAll();
+        if (fileName.length() == 0)
+            stopAll();
         else {
             if (running && f && (fileName == currentScript())) {
                 f.close();
@@ -135,7 +137,8 @@ namespace duckscript {
     }
 
     String currentScript() {
-        if (!running) return String();
+        if (!running)
+            return String();
         return String(f.name());
     }
-}
+} // namespace duckscript

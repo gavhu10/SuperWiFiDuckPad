@@ -5,7 +5,7 @@
 // Used to verify memory
 typedef struct boot {
     unsigned int magic_num : 32;
-    unsigned int boot_num  : 8;
+    unsigned int boot_num : 8;
 } boot;
 
 namespace eeprom {
@@ -23,7 +23,7 @@ namespace eeprom {
         EEPROM.get(EEPROM_BOOT_ADDR, b);
 
         if ((b.magic_num == BOOT_MAGIC_NUM) && (b.boot_num < 3)) {
-            saveObject(EEPROM_BOOT_ADDR, boot{ BOOT_MAGIC_NUM, ++b.boot_num });
+            saveObject(EEPROM_BOOT_ADDR, boot{BOOT_MAGIC_NUM, ++b.boot_num});
             return true;
         }
 
@@ -31,6 +31,6 @@ namespace eeprom {
     }
 
     void resetBootNum() {
-        saveObject(EEPROM_BOOT_ADDR, boot{ BOOT_MAGIC_NUM, 1 });
+        saveObject(EEPROM_BOOT_ADDR, boot{BOOT_MAGIC_NUM, 1});
     }
-};
+}; // namespace eeprom

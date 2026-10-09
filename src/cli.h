@@ -13,7 +13,7 @@
  *  \brief A function that outputs a given string, for example to std::out.
  *  \param s String to be printed
  */
-typedef void (* PrintFunction)(const char* s);
+typedef void (*PrintFunction)(const char *s);
 
 /*! \namespace CLI
  *  \brief Command line interface module
@@ -34,5 +34,5 @@ namespace cli {
      * \param printfunc Function that prints the result
      * \param echo      Flag to enable echo of input
      */
-    void parse(const char* input, PrintFunction printfunc, bool echo = true);
-}
+    void parse(const char *input, PrintFunction printfunc, bool echo = true);
+} // namespace cli

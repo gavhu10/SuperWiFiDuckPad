@@ -9,56 +9,52 @@
 #include "USBHIDKeyboard.h"
 #include "USB.h"
 
-#define KEY_KP_SLASH    0xDC
+#define KEY_KP_SLASH 0xDC
 #define KEY_KP_ASTERISK 0xDD
-#define KEY_KP_MINUS    0xDE
-#define KEY_KP_PLUS     0xDF
-#define KEY_KP_ENTER    0xE0
-#define KEY_KP_1        0xE1
-#define KEY_KP_2        0xE2
-#define KEY_KP_3        0xE3
-#define KEY_KP_4        0xE4
-#define KEY_KP_5        0xE5
-#define KEY_KP_6        0xE6
-#define KEY_KP_7        0xE7
-#define KEY_KP_8        0xE8
-#define KEY_KP_9        0xE9
-#define KEY_KP_0        0xEA
-#define KEY_KP_DOT      0xEB
+#define KEY_KP_MINUS 0xDE
+#define KEY_KP_PLUS 0xDF
+#define KEY_KP_ENTER 0xE0
+#define KEY_KP_1 0xE1
+#define KEY_KP_2 0xE2
+#define KEY_KP_3 0xE3
+#define KEY_KP_4 0xE4
+#define KEY_KP_5 0xE5
+#define KEY_KP_6 0xE6
+#define KEY_KP_7 0xE7
+#define KEY_KP_8 0xE8
+#define KEY_KP_9 0xE9
+#define KEY_KP_0 0xEA
+#define KEY_KP_DOT 0xEB
 
 #include "config.h"
 #include "debug.h"
 #include "led.h"
 
 extern "C" {
- #include "parser.h" // parse_lines1
+#include "parser.h" // parse_lines1
 }
 
 #define CASE_INSENSETIVE 0
 #define CASE_SENSETIVE 1
 
-
-
-
 namespace duckparser {
     // ====== PRIVATE ===== //
-    bool inString  = false;
+    bool inString = false;
     bool inComment = false;
 
     int defaultDelay = 5;
-    int repeatNum    = 0;
+    int repeatNum = 0;
 
-    unsigned long interpretTime  = 0;
+    unsigned long interpretTime = 0;
     unsigned long sleepStartTime = 0;
-    unsigned long sleepTime      = 0;
+    unsigned long sleepTime = 0;
 
     USBHIDKeyboard keyboard;
     USBHIDConsumerControl cc;
 
-
     void beginKeyboard() {
-      keyboard.begin();
-      cc.begin();
+        keyboard.begin();
+        cc.begin();
     }
 
     void pressKey(uint8_t key) {
@@ -66,8 +62,8 @@ namespace duckparser {
         keyboard.release(key);
     }
 
-    void type(const char* str, size_t len) {
-        keyboard.write((const uint8_t*)str, len);
+    void type(const char *str, size_t len) {
+        keyboard.write((const uint8_t *)str, len);
     }
 
     void pressMediaKey(uint8_t key) {
@@ -75,91 +71,151 @@ namespace duckparser {
         cc.release();
     }
 
-    void press(const char* str, size_t len) {
+    void press(const char *str, size_t len) {
         // character
 
         //
-        ESP_LOGI("","%s", str);
+        ESP_LOGI("", "%s", str);
 
-        if (len == 1) type(str, len);
+        if (len == 1)
+            type(str, len);
 
         // Keys
-        else if (compare1(str, len, "ENTER", CASE_SENSETIVE)) pressKey(KEY_RETURN);
-        else if (compare1(str, len, "MENU", CASE_SENSETIVE) || compare1(str, len, "APP", CASE_SENSETIVE)) keyboard.pressRaw(HID_KEY_CRSEL_PROPS);//KEY_PROPS);
-        else if (compare1(str, len, "DELETE", CASE_SENSETIVE)) pressKey(KEY_DELETE);
-        else if (compare1(str, len, "BACKSPACE", CASE_SENSETIVE)) pressKey(KEY_BACKSPACE);
-        else if (compare1(str, len, "HOME", CASE_SENSETIVE)) pressKey(KEY_HOME);
-        else if (compare1(str, len, "INSERT", CASE_SENSETIVE)) pressKey(KEY_INSERT);
-        else if (compare1(str, len, "PAGEUP", CASE_SENSETIVE)) pressKey(KEY_PAGE_UP);
-        else if (compare1(str, len, "PAGEDOWN", CASE_SENSETIVE)) pressKey(KEY_PAGE_DOWN);
-        else if (compare1(str, len, "UPARROW", CASE_SENSETIVE) || compare1(str, len, "UP", CASE_SENSETIVE)) pressKey(KEY_UP_ARROW);
-        else if (compare1(str, len, "DOWNARROW", CASE_SENSETIVE) || compare1(str, len, "DOWN", CASE_SENSETIVE)) pressKey(KEY_DOWN_ARROW);
-        else if (compare1(str, len, "LEFTARROW", CASE_SENSETIVE) || compare1(str, len, "LEFT", CASE_SENSETIVE)) pressKey(KEY_LEFT_ARROW);
-        else if (compare1(str, len, "RIGHTARROW", CASE_SENSETIVE) || compare1(str, len, "RIGHT", CASE_SENSETIVE)) pressKey(KEY_RIGHT_ARROW);
-        else if (compare1(str, len, "TAB", CASE_SENSETIVE)) pressKey(KEY_TAB);
-        else if (compare1(str, len, "END", CASE_SENSETIVE)) pressKey(KEY_END);
-        else if (compare1(str, len, "ESC", CASE_SENSETIVE) || compare1(str, len, "ESCAPE", CASE_SENSETIVE)) pressKey(KEY_ESC);
-        else if (compare1(str, len, "F1", CASE_SENSETIVE)) pressKey(KEY_F1);
-        else if (compare1(str, len, "F2", CASE_SENSETIVE)) pressKey(KEY_F2);
-        else if (compare1(str, len, "F3", CASE_SENSETIVE)) pressKey(KEY_F3);
-        else if (compare1(str, len, "F4", CASE_SENSETIVE)) pressKey(KEY_F4);
-        else if (compare1(str, len, "F5", CASE_SENSETIVE)) pressKey(KEY_F5);
-        else if (compare1(str, len, "F6", CASE_SENSETIVE)) pressKey(KEY_F6);
-        else if (compare1(str, len, "F7", CASE_SENSETIVE)) pressKey(KEY_F7);
-        else if (compare1(str, len, "F8", CASE_SENSETIVE)) pressKey(KEY_F8);
-        else if (compare1(str, len, "F9", CASE_SENSETIVE)) pressKey(KEY_F9);
-        else if (compare1(str, len, "F10", CASE_SENSETIVE)) pressKey(KEY_F10);
-        else if (compare1(str, len, "F11", CASE_SENSETIVE)) pressKey(KEY_F11);
-        else if (compare1(str, len, "F12", CASE_SENSETIVE)) pressKey(KEY_F12);
-        else if (compare1(str, len, "SPACE", CASE_SENSETIVE)) pressKey(KEY_SPACE);
-        else if (compare1(str, len, "PAUSE", CASE_SENSETIVE) || compare1(str, len, "BREAK", CASE_SENSETIVE)) pressKey(KEY_PAUSE);
-        else if (compare1(str, len, "CAPSLOCK", CASE_SENSETIVE)) pressKey(KEY_CAPS_LOCK);
-        else if (compare1(str, len, "NUMLOCK", CASE_SENSETIVE)) pressKey(KEY_NUM_LOCK);
-        else if (compare1(str, len, "PRINTSCREEN", CASE_SENSETIVE)) pressKey(HID_KEY_SYSREQ_ATTENTION);
-        else if (compare1(str, len, "SCROLLLOCK", CASE_SENSETIVE)) pressKey(KEY_SCROLL_LOCK);
+        else if (compare1(str, len, "ENTER", CASE_SENSETIVE))
+            pressKey(KEY_RETURN);
+        else if (compare1(str, len, "MENU", CASE_SENSETIVE) || compare1(str, len, "APP", CASE_SENSETIVE))
+            keyboard.pressRaw(HID_KEY_CRSEL_PROPS); // KEY_PROPS);
+        else if (compare1(str, len, "DELETE", CASE_SENSETIVE))
+            pressKey(KEY_DELETE);
+        else if (compare1(str, len, "BACKSPACE", CASE_SENSETIVE))
+            pressKey(KEY_BACKSPACE);
+        else if (compare1(str, len, "HOME", CASE_SENSETIVE))
+            pressKey(KEY_HOME);
+        else if (compare1(str, len, "INSERT", CASE_SENSETIVE))
+            pressKey(KEY_INSERT);
+        else if (compare1(str, len, "PAGEUP", CASE_SENSETIVE))
+            pressKey(KEY_PAGE_UP);
+        else if (compare1(str, len, "PAGEDOWN", CASE_SENSETIVE))
+            pressKey(KEY_PAGE_DOWN);
+        else if (compare1(str, len, "UPARROW", CASE_SENSETIVE) || compare1(str, len, "UP", CASE_SENSETIVE))
+            pressKey(KEY_UP_ARROW);
+        else if (compare1(str, len, "DOWNARROW", CASE_SENSETIVE) || compare1(str, len, "DOWN", CASE_SENSETIVE))
+            pressKey(KEY_DOWN_ARROW);
+        else if (compare1(str, len, "LEFTARROW", CASE_SENSETIVE) || compare1(str, len, "LEFT", CASE_SENSETIVE))
+            pressKey(KEY_LEFT_ARROW);
+        else if (compare1(str, len, "RIGHTARROW", CASE_SENSETIVE) || compare1(str, len, "RIGHT", CASE_SENSETIVE))
+            pressKey(KEY_RIGHT_ARROW);
+        else if (compare1(str, len, "TAB", CASE_SENSETIVE))
+            pressKey(KEY_TAB);
+        else if (compare1(str, len, "END", CASE_SENSETIVE))
+            pressKey(KEY_END);
+        else if (compare1(str, len, "ESC", CASE_SENSETIVE) || compare1(str, len, "ESCAPE", CASE_SENSETIVE))
+            pressKey(KEY_ESC);
+        else if (compare1(str, len, "F1", CASE_SENSETIVE))
+            pressKey(KEY_F1);
+        else if (compare1(str, len, "F2", CASE_SENSETIVE))
+            pressKey(KEY_F2);
+        else if (compare1(str, len, "F3", CASE_SENSETIVE))
+            pressKey(KEY_F3);
+        else if (compare1(str, len, "F4", CASE_SENSETIVE))
+            pressKey(KEY_F4);
+        else if (compare1(str, len, "F5", CASE_SENSETIVE))
+            pressKey(KEY_F5);
+        else if (compare1(str, len, "F6", CASE_SENSETIVE))
+            pressKey(KEY_F6);
+        else if (compare1(str, len, "F7", CASE_SENSETIVE))
+            pressKey(KEY_F7);
+        else if (compare1(str, len, "F8", CASE_SENSETIVE))
+            pressKey(KEY_F8);
+        else if (compare1(str, len, "F9", CASE_SENSETIVE))
+            pressKey(KEY_F9);
+        else if (compare1(str, len, "F10", CASE_SENSETIVE))
+            pressKey(KEY_F10);
+        else if (compare1(str, len, "F11", CASE_SENSETIVE))
+            pressKey(KEY_F11);
+        else if (compare1(str, len, "F12", CASE_SENSETIVE))
+            pressKey(KEY_F12);
+        else if (compare1(str, len, "SPACE", CASE_SENSETIVE))
+            pressKey(KEY_SPACE);
+        else if (compare1(str, len, "PAUSE", CASE_SENSETIVE) || compare1(str, len, "BREAK", CASE_SENSETIVE))
+            pressKey(KEY_PAUSE);
+        else if (compare1(str, len, "CAPSLOCK", CASE_SENSETIVE))
+            pressKey(KEY_CAPS_LOCK);
+        else if (compare1(str, len, "NUMLOCK", CASE_SENSETIVE))
+            pressKey(KEY_NUM_LOCK);
+        else if (compare1(str, len, "PRINTSCREEN", CASE_SENSETIVE))
+            pressKey(HID_KEY_SYSREQ_ATTENTION);
+        else if (compare1(str, len, "SCROLLLOCK", CASE_SENSETIVE))
+            pressKey(KEY_SCROLL_LOCK);
 
         // NUMPAD KEYS
-        else if (compare1(str, len, "NUM_0", CASE_SENSETIVE)) pressKey(KEY_KP_0);
-        else if (compare1(str, len, "NUM_1", CASE_SENSETIVE)) pressKey(KEY_KP_1);
-        else if (compare1(str, len, "NUM_2", CASE_SENSETIVE)) pressKey(KEY_KP_2);
-        else if (compare1(str, len, "NUM_3", CASE_SENSETIVE)) pressKey(KEY_KP_3);
-        else if (compare1(str, len, "NUM_4", CASE_SENSETIVE)) pressKey(KEY_KP_4);
-        else if (compare1(str, len, "NUM_5", CASE_SENSETIVE)) pressKey(KEY_KP_5);
-        else if (compare1(str, len, "NUM_6", CASE_SENSETIVE)) pressKey(KEY_KP_6);
-        else if (compare1(str, len, "NUM_7", CASE_SENSETIVE)) pressKey(KEY_KP_7);
-        else if (compare1(str, len, "NUM_8", CASE_SENSETIVE)) pressKey(KEY_KP_8);
-        else if (compare1(str, len, "NUM_9", CASE_SENSETIVE)) pressKey(KEY_KP_9);
-        else if (compare1(str, len, "NUM_ASTERIX", CASE_SENSETIVE)) pressKey(KEY_KP_ASTERISK);
-        else if (compare1(str, len, "NUM_ENTER", CASE_SENSETIVE)) pressKey(KEY_KP_ENTER);
-        else if (compare1(str, len, "NUM_MINUS", CASE_SENSETIVE)) pressKey(KEY_KP_MINUS);
-        else if (compare1(str, len, "NUM_DOT", CASE_SENSETIVE)) pressKey(KEY_KP_DOT);
-        else if (compare1(str, len, "NUM_PLUS", CASE_SENSETIVE)) pressKey(KEY_KP_PLUS);
+        else if (compare1(str, len, "NUM_0", CASE_SENSETIVE))
+            pressKey(KEY_KP_0);
+        else if (compare1(str, len, "NUM_1", CASE_SENSETIVE))
+            pressKey(KEY_KP_1);
+        else if (compare1(str, len, "NUM_2", CASE_SENSETIVE))
+            pressKey(KEY_KP_2);
+        else if (compare1(str, len, "NUM_3", CASE_SENSETIVE))
+            pressKey(KEY_KP_3);
+        else if (compare1(str, len, "NUM_4", CASE_SENSETIVE))
+            pressKey(KEY_KP_4);
+        else if (compare1(str, len, "NUM_5", CASE_SENSETIVE))
+            pressKey(KEY_KP_5);
+        else if (compare1(str, len, "NUM_6", CASE_SENSETIVE))
+            pressKey(KEY_KP_6);
+        else if (compare1(str, len, "NUM_7", CASE_SENSETIVE))
+            pressKey(KEY_KP_7);
+        else if (compare1(str, len, "NUM_8", CASE_SENSETIVE))
+            pressKey(KEY_KP_8);
+        else if (compare1(str, len, "NUM_9", CASE_SENSETIVE))
+            pressKey(KEY_KP_9);
+        else if (compare1(str, len, "NUM_ASTERIX", CASE_SENSETIVE))
+            pressKey(KEY_KP_ASTERISK);
+        else if (compare1(str, len, "NUM_ENTER", CASE_SENSETIVE))
+            pressKey(KEY_KP_ENTER);
+        else if (compare1(str, len, "NUM_MINUS", CASE_SENSETIVE))
+            pressKey(KEY_KP_MINUS);
+        else if (compare1(str, len, "NUM_DOT", CASE_SENSETIVE))
+            pressKey(KEY_KP_DOT);
+        else if (compare1(str, len, "NUM_PLUS", CASE_SENSETIVE))
+            pressKey(KEY_KP_PLUS);
 
         // Modifiers
-        else if (compare1(str, len, "CTRL", CASE_SENSETIVE) || compare1(str, len, "CONTROL", CASE_SENSETIVE)) keyboard.pressRaw(HID_KEY_CONTROL_LEFT);
-        else if (compare1(str, len, "SHIFT", CASE_SENSETIVE)) keyboard.pressRaw(HID_KEY_SHIFT_RIGHT);
-        else if (compare1(str, len, "ALT", CASE_SENSETIVE)) keyboard.pressRaw(HID_KEY_ALT_LEFT);
-        else if (compare1(str, len, "WINDOWS", CASE_SENSETIVE) || compare1(str, len, "GUI", CASE_SENSETIVE)) keyboard.pressRaw(HID_KEY_GUI_LEFT);
+        else if (compare1(str, len, "CTRL", CASE_SENSETIVE) || compare1(str, len, "CONTROL", CASE_SENSETIVE))
+            keyboard.pressRaw(HID_KEY_CONTROL_LEFT);
+        else if (compare1(str, len, "SHIFT", CASE_SENSETIVE))
+            keyboard.pressRaw(HID_KEY_SHIFT_RIGHT);
+        else if (compare1(str, len, "ALT", CASE_SENSETIVE))
+            keyboard.pressRaw(HID_KEY_ALT_LEFT);
+        else if (compare1(str, len, "WINDOWS", CASE_SENSETIVE) || compare1(str, len, "GUI", CASE_SENSETIVE))
+            keyboard.pressRaw(HID_KEY_GUI_LEFT);
 
         // // Media keys
-        else if (compare1(str, len, "MEDIA_PLAY_PAUSE", CASE_SENSETIVE)) pressMediaKey(CONSUMER_CONTROL_PLAY_PAUSE);
-        else if (compare1(str, len, "MEDIA_NEXT", CASE_SENSETIVE)) pressMediaKey(CONSUMER_CONTROL_SCAN_NEXT);
-        else if (compare1(str, len, "MEDIA_PREVIOUS", CASE_SENSETIVE)) pressMediaKey(CONSUMER_CONTROL_SCAN_PREVIOUS);
-        else if (compare1(str, len, "MEDIA_MUTE", CASE_SENSETIVE)) pressMediaKey(CONSUMER_CONTROL_MUTE);
-        else if (compare1(str, len, "MEDIA_VOL_INC", CASE_SENSETIVE)) pressMediaKey(CONSUMER_CONTROL_VOLUME_INCREMENT);
-        else if (compare1(str, len, "MEDIA_VOL_DEC", CASE_SENSETIVE)) pressMediaKey(CONSUMER_CONTROL_VOLUME_DECREMENT);
-
+        else if (compare1(str, len, "MEDIA_PLAY_PAUSE", CASE_SENSETIVE))
+            pressMediaKey(CONSUMER_CONTROL_PLAY_PAUSE);
+        else if (compare1(str, len, "MEDIA_NEXT", CASE_SENSETIVE))
+            pressMediaKey(CONSUMER_CONTROL_SCAN_NEXT);
+        else if (compare1(str, len, "MEDIA_PREVIOUS", CASE_SENSETIVE))
+            pressMediaKey(CONSUMER_CONTROL_SCAN_PREVIOUS);
+        else if (compare1(str, len, "MEDIA_MUTE", CASE_SENSETIVE))
+            pressMediaKey(CONSUMER_CONTROL_MUTE);
+        else if (compare1(str, len, "MEDIA_VOL_INC", CASE_SENSETIVE))
+            pressMediaKey(CONSUMER_CONTROL_VOLUME_INCREMENT);
+        else if (compare1(str, len, "MEDIA_VOL_DEC", CASE_SENSETIVE))
+            pressMediaKey(CONSUMER_CONTROL_VOLUME_DECREMENT);
 
         // Utf8 character
-        else type(str, len);
+        else
+            type(str, len);
     }
 
     void release() {
         keyboard.releaseAll();
     }
 
-    unsigned int toInt(const char* str, size_t len) {
-        if (!str || (len == 0)) return 0;
+    unsigned int toInt(const char *str, size_t len) {
+        if (!str || (len == 0))
+            return 0;
 
         unsigned int val = 0;
 
@@ -168,9 +224,12 @@ namespace duckparser {
             for (size_t i = 2; i < len; ++i) {
                 uint8_t b = str[i];
 
-                if ((b >= '0') && (b <= '9')) b = b - '0';
-                else if ((b >= 'a') && (b <= 'f')) b = b - 'a' + 10;
-                else if ((b >= 'A') && (b <= 'F')) b = b - 'A' + 10;
+                if ((b >= '0') && (b <= '9'))
+                    b = b - '0';
+                else if ((b >= 'a') && (b <= 'f'))
+                    b = b - 'a' + 10;
+                else if ((b >= 'A') && (b <= 'F'))
+                    b = b - 'A' + 10;
 
                 val = (val << 4) | (b & 0xF);
             }
@@ -192,7 +251,7 @@ namespace duckparser {
 
         if (time > offset) {
             sleepStartTime = millis();
-            sleepTime      = time - offset;
+            sleepTime = time - offset;
 
             delay(sleepTime);
         }
@@ -200,14 +259,14 @@ namespace duckparser {
 
     // ====== PUBLIC ===== //
 
-    void parse(const char* str, size_t len) {
+    void parse(const char *str, size_t len) {
         interpretTime = millis();
 
         // Split str into a list of lines
-        line_list* l = parse_lines1(str, len);
+        line_list *l = parse_lines1(str, len);
 
         // Go through all lines
-        line_node* n = l->first;
+        line_node *n = l->first;
 
         // Flag, no default delay after this command
         bool ignore_delay;
@@ -215,21 +274,20 @@ namespace duckparser {
         while (n) {
             ignore_delay = false;
 
-            word_list* wl  = n->words;
-            word_node* cmd = wl->first;
+            word_list *wl = n->words;
+            word_node *cmd = wl->first;
 
-            const char* line_str = cmd->str + cmd->len + 1;
-            size_t line_str_len  = n->len - cmd->len - 1;
+            const char *line_str = cmd->str + cmd->len + 1;
+            size_t line_str_len = n->len - cmd->len - 1;
 
             char last_char = n->str[n->len];
-            bool line_end  = last_char == '\r' || last_char == '\n';
+            bool line_end = last_char == '\r' || last_char == '\n';
 
             // REM (= Comment -> do nothing)
             if (inComment || compare1(cmd->str, cmd->len, "REM", CASE_SENSETIVE)) {
-                inComment    = !line_end;
+                inComment = !line_end;
                 ignore_delay = true;
             }
-
 
             // DELAY (-> sleep for x ms)
             else if (compare1(cmd->str, cmd->len, "DELAY", CASE_SENSETIVE)) {
@@ -243,12 +301,11 @@ namespace duckparser {
                 ignore_delay = true;
             }
 
-//            // REPEAT (-> repeat last command n times)
-//            else if (compare1(cmd->str, cmd->len, "REPEAT", CASE_SENSETIVE) || compare1(cmd->str, cmd->len, "REPLAY", CASE_SENSETIVE)) {
-//                repeatNum    = toInt(line_str, line_str_len) + 1;
-//                ignore_delay = true;
-//            }
-
+            //            // REPEAT (-> repeat last command n times)
+            //            else if (compare1(cmd->str, cmd->len, "REPEAT", CASE_SENSETIVE) || compare1(cmd->str, cmd->len, "REPLAY", CASE_SENSETIVE)) {
+            //                repeatNum    = toInt(line_str, line_str_len) + 1;
+            //                ignore_delay = true;
+            //            }
 
             // STRINGLN (-> type each character and then press enter)
             else if (inString || compare1(cmd->str, cmd->len, "STRINGLN", CASE_SENSETIVE)) {
@@ -271,14 +328,14 @@ namespace duckparser {
 
             // LED
             else if (compare1(cmd->str, cmd->len, "LED", CASE_SENSETIVE)) {
-                word_node* w = cmd->next;
+                word_node *w = cmd->next;
 
                 int c[3];
 
-                for (uint8_t i = 0; i<3; ++i) {
+                for (uint8_t i = 0; i < 3; ++i) {
                     if (w) {
                         c[i] = toInt(w->str, w->len);
-                        w    = w->next;
+                        w = w->next;
                     } else {
                         c[i] = 0;
                     }
@@ -289,18 +346,18 @@ namespace duckparser {
 
             // KEYCODE
             else if (compare1(cmd->str, cmd->len, "KEYCODE", CASE_SENSETIVE)) {
-                word_node* w = cmd->next;
+                word_node *w = cmd->next;
                 if (w) {
                     KeyReport k;
 
                     k.modifiers = (uint8_t)toInt(w->str, w->len);
-                    k.reserved  = 0;
-                    w           = w->next;
+                    k.reserved = 0;
+                    w = w->next;
 
-                    for (uint8_t i = 0; i<6; ++i) {
+                    for (uint8_t i = 0; i < 6; ++i) {
                         if (w) {
                             k.keys[i] = (uint8_t)toInt(w->str, w->len);
-                            w         = w->next;
+                            w = w->next;
                         } else {
                             k.keys[i] = 0;
                         }
@@ -313,21 +370,24 @@ namespace duckparser {
 
             // Otherwise go through words and look for keys to press
             else {
-                word_node* w = wl->first;
+                word_node *w = wl->first;
 
                 while (w) {
                     press(w->str, w->len);
                     w = w->next;
                 }
 
-                if (line_end) release();
+                if (line_end)
+                    release();
             }
 
             n = n->next;
 
-            if (!inString && !inComment && !ignore_delay) sleep(defaultDelay);
+            if (!inString && !inComment && !ignore_delay)
+                sleep(defaultDelay);
 
-            if (line_end && (repeatNum > 0)) --repeatNum;
+            if (line_end && (repeatNum > 0))
+                --repeatNum;
 
             interpretTime = millis();
         }
@@ -340,7 +400,7 @@ namespace duckparser {
     }
 
     unsigned int getDelayTime() {
-        unsigned long finishTime  = sleepStartTime + sleepTime;
+        unsigned long finishTime = sleepStartTime + sleepTime;
         unsigned long currentTime = millis();
 
         if (currentTime > finishTime) {
@@ -350,4 +410,4 @@ namespace duckparser {
             return (unsigned int)remainingTime;
         }
     }
-}
+} // namespace duckparser

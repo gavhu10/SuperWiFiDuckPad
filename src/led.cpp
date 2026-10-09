@@ -12,7 +12,7 @@
 #include <Adafruit_NeoPixel.h>
 
 namespace led {
-    Adafruit_NeoPixel led { NEOPIXEL_NUM, LED_PIN, NEO_GRB + NEO_KHZ800 };
+    Adafruit_NeoPixel led{NEOPIXEL_NUM, LED_PIN, NEO_GRB + NEO_KHZ800};
 
     void begin() {
         led.begin();
@@ -20,20 +20,20 @@ namespace led {
     }
 
     void setColor(int r, int g, int b) {
-        for (size_t i = 0; i<led.numPixels(); i++) {
+        for (size_t i = 0; i < led.numPixels(); i++) {
             led.setPixelColor(i, r, g, b);
         }
 
         led.show();
     }
-}
+} // namespace led
 
 #elif defined(DOTSTAR)
 
 #include "Adafruit_DotStar.h"
 
 namespace led {
-    Adafruit_DotStar led { DOTSTAR_NUM, DOTSTAR_DI, DOTSTAR_CI, DOTSTAR_BGR };
+    Adafruit_DotStar led{DOTSTAR_NUM, DOTSTAR_DI, DOTSTAR_CI, DOTSTAR_BGR};
 
     void begin() {
         led.begin();
@@ -41,19 +41,19 @@ namespace led {
     }
 
     void setColor(int r, int g, int b) {
-        for (size_t i = 0; i<led.numPixels(); i++) {
+        for (size_t i = 0; i < led.numPixels(); i++) {
             led.setPixelColor(i, r, g, b);
         }
 
         led.show();
     }
-}
+} // namespace led
 
 #elif defined(LED_RGB)
 
 namespace led {
-    #include <Arduino.h>
-    
+#include <Arduino.h>
+
     void begin() {
         pinMode(LED_R, OUTPUT);
         pinMode(LED_G, OUTPUT);
@@ -71,7 +71,7 @@ namespace led {
         analogWrite(LED_G, g);
         analogWrite(LED_B, b);
     }
-}
+} // namespace led
 
 #else // if defined(NEOPIXEL)
 
@@ -79,6 +79,6 @@ namespace led {
     void begin() {}
 
     void setColor(int r, int g, int b) {}
-}
+} // namespace led
 
 #endif // if defined(NEOPIXEL)

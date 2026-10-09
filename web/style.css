@@ -148,6 +148,10 @@ code {
 	color: #0092db;
 }
 
+#selectedID {
+	color: #43B581;
+}
+
 .select {
   	width: 98px !important;
   	padding: 0 !important;
@@ -350,6 +354,10 @@ th, td {
 
 #ducky-functions-table td {
   	min-width: 180px;
+}
+
+#button-grid button.primary {
+    color: #bfbfbf;
 }
 
 @media only screen and (max-width: 768px), (min-device-width: 768px) and (max-device-width: 1024px) {

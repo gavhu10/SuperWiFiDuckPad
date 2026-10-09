@@ -22,6 +22,8 @@ var file_opened = false;
 
 var editorFile = "";
 
+var profile_lines;
+
 // ========== Global Functions ========== //
 
 // ===== Value Getters ===== //
@@ -51,11 +53,12 @@ function get_profile() {
   ws_send("get_profile", function (content) {
     profile = content;
   })
-  console.log(profile)
+  console.log("Profile set to: " + profile)
 }
 
-function set_profile(profile) {
-  ws_send("set_profile " + profile, log_ws);
+function set_profile(new_profile) {
+  ws_send("set_profile " + new_profile, log_ws);
+  profile = new_profile
   update_profiles();
 }
 
@@ -74,7 +77,6 @@ function update_profiles() {
   ws_send("list_profile", function (msg) {
     var lines = msg.split(/\n/).filter(i => i !== "\r" && i !=="");
 
-    console.log(lines)
 
     var tableHTML = "<thead>\n";
     tableHTML += "<tr>\n";
@@ -84,20 +86,20 @@ function update_profiles() {
     tableHTML += "</thead>\n";
     tableHTML += "<tbody>\n";
 
-    for (const profile of lines) {
+    for (const profile_name of lines) {
       tableHTML += "<tr>\n";
-      tableHTML += "<td>" + profile + "</td>\n";
+      tableHTML += "<td"
+      tableHTML += ((profile_name === profile) ? " id=\"selectedID\" >" : ">")
+      tableHTML += profile_name + "</td>\n";
       tableHTML += "<td>\n";
-      tableHTML += "<button class=\"primary\" onclick=\"set_profile('" + profile + "')\">set profile</button>\n";
-      tableHTML += "<button class=\"warn\" onclick=\"remove_profile('" + profile + "')\">delete profile</button>\n";
+      tableHTML += "<button class=\"primary\" onclick=\"set_profile('" + profile_name + "')\">set profile</button>\n";
+      tableHTML += "<button class=\"warn\" onclick=\"remove_profile('" + profile_name + "')\">delete profile</button>\n";
       tableHTML += "</tr>\n";
     }
 
     tableHTML += "</tbody>\n";
 
     E("profileTable").innerHTML = tableHTML;
-
-    console.log(tableHTML);
 
     get_profile();
     file_opened = false;
@@ -176,15 +178,12 @@ function update_file_html() {
       var fileName = profile + i.toString();
 
       if (i == 0 && !file_opened) {
-        read(fileName, dont_update_list=true);
+        read(fileName);
       }
       tableHTML += "<tr>\n";
       tableHTML += "<td>\n";
-      console.log(editorFile);
-      console.log(fileName);
-      console.log(editorFile.endsWith(fileName));
       tableHTML += "<button "
-      + (editorFile.endsWith(fileName) ? "class=\"warn\"" : "class=\"primary\"") 
+      + (editorFile.endsWith(fileName) ? "class=\"success\"" : "class=\"primary\"") 
       + " onclick=\"read('" + fileName + "')\">" 
       + (i + 1).toString()
       + "</button>\n";
@@ -234,7 +233,7 @@ function read_stream() {
 }
 
 // ! Open stream to a file
-function read(fileName, dont_update_list=false) {
+function read(fileName) {
   stop(fileName);
 
   fileName = fixFileName(fileName);

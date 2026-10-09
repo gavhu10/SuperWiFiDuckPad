@@ -336,10 +336,6 @@ window.addEventListener("load", function () {
     run(get_editor_filename());
   };
 
-  E("editor").onkeyup = function () {
-    unsaved_changed = true;
-    E("editorinfo").innerHTML = "unsaved changes";
-  }
 
   E("editorAutorun").onclick = function () {
     if (confirm("Run this script automatically on startup?\nYou can disable it in the settings."))
@@ -356,3 +352,14 @@ window.addEventListener("load", function () {
 
   ws_init();
 }, false);
+
+document.addEventListener("keydown", function(event) {
+    if (event.ctrlKey && event.key.toLowerCase() === "s") {
+      event.preventDefault();
+
+      save();
+    } else {
+      unsaved_changed = false;
+      E("editorinfo").innerHTML = "unsaved changes";
+    }
+});

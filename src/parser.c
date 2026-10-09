@@ -253,6 +253,13 @@ word_list *parse_words1(const char *str, size_t len) {
     // Go through string and look for space to split it into words
     word_node *n = NULL;
 
+    // lines with just a space are not parsed 
+    if (strcmp(str, " ")) {
+        n = word_node_create1(str, 2);
+        word_list_push1(l, n);
+        return l;    
+    }
+
     size_t i = 0; // current index
     size_t j = 0; // start index of word
 

@@ -77,10 +77,6 @@ function update_profiles() {
   ws_send("list_profile", function (msg) {
     var lines = msg.split(/\n/).filter(i => i !== "\r" && i !=="");
 
-    if (!profile) {
-      profile = lines[0];
-    }
-
 
     var tableHTML = "<thead>\n";
     tableHTML += "<tr>\n";
@@ -303,6 +299,7 @@ function save() {
 
 // ! Function that is called once the websocket connection was established
 function ws_connected() {
+  get_profile();
   update_profiles();
 }
 

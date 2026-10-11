@@ -9,7 +9,7 @@
 // ! List of files returned by "ls" command
 var file_list = "";
 
-var profile = "default";
+var profile = "";
 
 // ! Variable to save interval for updating status continously
 var status_interval = undefined;
@@ -76,6 +76,10 @@ function get_new_profile() {
 function update_profiles() {
   ws_send("list_profile", function (msg) {
     var lines = msg.split(/\n/).filter(i => i !== "\r" && i !=="");
+
+    if (!profile) {
+      profile = lines[0];
+    }
 
 
     var tableHTML = "<thead>\n";

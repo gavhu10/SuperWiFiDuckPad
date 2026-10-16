@@ -3,14 +3,44 @@
    Source: https://github.com/spacehuhntech/WiFiDuck
 """
 
+Import("env")
+
+
 import os
-import binascii
 import gzip
+try:
+    import markdown
+except ImportError:
+    env.execute("$PYTHONEXE -m pip install markdown")
+
+def convert_markdown(text):
+    return markdown.markdown(text, extensions=["tables", "fenced_code"])
 
 def get_file_content(path):
     file = open(path,"r")
     content = file.read().encode("utf-8")
     file.close();
+    if path == "web/index.html":
+        with open("DUCKYSCRIPT.md") as file:
+            md = convert_markdown(file.read())
+
+        md += """
+        </section>
+        </main>
+        <footer>
+            <a href="https://github.com/spacehuhntech/WiFiDuck" target="_blank">Source</a>
+            <br><br>
+            <span id="version"></span><br>
+            Copyright (c) 2021 Spacehuhn Technologies<br>
+            <a href="https://spacehuhn.com" target="_blank">spacehuhn.com</a>
+        </footer>
+        </body>
+        </html>
+        """
+
+        content += md.encode()
+        with open("web/test.html", "w") as file:
+            file.write(content.decode())
 
     gzip_content = gzip.compress(content, mtime=0)
 

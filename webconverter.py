@@ -11,7 +11,8 @@ import gzip
 try:
     import markdown
 except ImportError:
-    env.execute("$PYTHONEXE -m pip install markdown")
+    env.Execute("$PYTHONEXE -m pip install markdown")
+    import markdown
 
 def convert_markdown(text):
     return markdown.markdown(text, extensions=["tables", "fenced_code"])
@@ -39,8 +40,6 @@ def get_file_content(path):
         """
 
         content += md.encode()
-        with open("web/test.html", "w") as file:
-            file.write(content.decode())
 
     gzip_content = gzip.compress(content, mtime=0)
 

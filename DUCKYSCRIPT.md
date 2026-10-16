@@ -1,5 +1,5 @@
 ## Scripting
-
+  
 ### Basics
 
 Keys are separated by a single space.  
@@ -78,6 +78,18 @@ It's compatible to Ducky Script, which was developed by the wonderful people at 
 | `NUM_MINUS` |
 | `NUM_DOT` |
 | `NUM_PLUS` |
+
+
+### Media Keys
+
+| Key |
+| --- |
+| `MEDIA_PLAY_PAUSE` |
+| `MEDIA_NEXT` |
+| `MEDIA_PREVIOUS` |
+| `MEDIA_MUTE` |
+| `MEDIA_VOL_INC` |
+| `MEDIA_VOL_DEC` |
 
 ### Examples
 

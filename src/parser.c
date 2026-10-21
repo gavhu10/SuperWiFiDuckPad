@@ -9,6 +9,7 @@
 #include <stdlib.h>  // malloc
 #include <string.h>  // strlen
 #include <stdbool.h> // bool
+// #include "debug.h"// rename file to .cpp and wrap parser.h in extern "C" to use debug functions
 
 // My own implementation, because the default one in ctype.h make problems on older ESP8266 SDKs
 char to_lower1(char c) {
@@ -245,6 +246,8 @@ line_node *line_list_get1(line_list *l, size_t i) {
 
 // ===== Parser ===== //
 word_list *parse_words1(const char *str, size_t len) {
+    // debugf("Parsing line \"%s\"", str);
+    // debugf(" with length %d", len);
     word_list *l = word_list_create1();
 
     if (len == 0)
@@ -253,11 +256,12 @@ word_list *parse_words1(const char *str, size_t len) {
     // Go through string and look for space to split it into words
     word_node *n = NULL;
 
-    // lines with just a space are not parsed 
-    if (strcmp(str, " ")) {
-        n = word_node_create1(str, 2);
+    // lines with just a space are not parsed
+    if ((strcmp(str, " \n") == 0) && (len == 1)) {
+        // debugf("Got str: \"%s\"\n", str);
+        n = word_node_create1(" ", 2);
         word_list_push1(l, n);
-        return l;    
+        return l;
     }
 
     size_t i = 0; // current index

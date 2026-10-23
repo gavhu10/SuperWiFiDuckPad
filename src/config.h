@@ -34,4 +34,4 @@
 #define WIFI_CHANNEL "1"
 
 #define HOSTNAME "wifiduck"
-#define URL "wifi-duck.local"
+#define URL "wifiduck.local"

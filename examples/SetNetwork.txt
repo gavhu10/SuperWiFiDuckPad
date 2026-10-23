@@ -1,0 +1,35 @@
+REM Connect to Wi-Fi: wifiduck
+
+DELAY 1000
+GUI r
+DELAY 200
+STRINGLN powershell -NoProfile -ExecutionPolicy Bypass
+DELAY 1500
+
+STRINGLN $ssid = "wifiduck"
+STRINGLN $pass = "wifiduck"
+
+STRINGLN $xml = "$env:TEMP\wifi.xml"
+
+STRINGLN $x = '<WLANProfile xmlns="http://www.microsoft.com/networking/WLAN/profile/v1">'
+STRINGLN $x += "<name>$ssid</name>"
+STRINGLN $x += "<SSIDConfig><SSID><name>$ssid</name></SSID></SSIDConfig>"
+STRINGLN $x += "<connectionType>ESS</connectionType>"
+STRINGLN $x += "<connectionMode>manual</connectionMode>"
+STRINGLN $x += "<MSM><security><authEncryption>"
+STRINGLN $x += "<authentication>WPA2PSK</authentication>"
+STRINGLN $x += "<encryption>AES</encryption>"
+STRINGLN $x += "<useOneX>false</useOneX>"
+STRINGLN $x += "</authEncryption><sharedKey>"
+STRINGLN $x += "<keyType>passPhrase</keyType>"
+STRINGLN $x += "<protected>false</protected>"
+STRINGLN $x += "<keyMaterial>$pass</keyMaterial>"
+STRINGLN $x += "</sharedKey></security></MSM>"
+STRINGLN $x += "</WLANProfile>"
+STRINGLN $x | Out-File $xml -Encoding ascii
+
+STRINGLN netsh wlan add profile filename="$xml" user=current
+STRINGLN netsh wlan connect name="$ssid"
+STRINGLN Remove-Item $xml
+
+STRINGLN exit

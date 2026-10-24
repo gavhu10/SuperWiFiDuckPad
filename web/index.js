@@ -175,7 +175,7 @@ function update_file_html() {
     file_list = "";
     var tableHTML = "<tbody id=button-grid>\n";
     for (var i = 0; i < 9; i++) {
-      var fileName = profile + i.toString();
+      var fileName = fixFileName(profile) + i.toString();
 
       if (i == 0 && !file_opened) {
         read(fileName);

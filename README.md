@@ -1,9 +1,11 @@
 # Super WiFi Duck Pad
 
-This is the firmware for [my keypad](https://github.com/gavhu10/keypad).
+This is the firmware for [my keypad](https://github.com/gavhu10/keypad).  
 
-It is called SuperWifiDuckPad because it is a fork of [wasdwasd0105/SuperWiFiDuck](https://github.com/wasdwasd0105/SuperWiFiDuck).
-The SuperWifiDuck project is in turn is a fork of [SpacehuhnTech/WiFiDuck](https://github.com/SpacehuhnTech/WiFiDuck).
+<img src="https://github.com/gavhu10/keypad/blob/main/pics/case.png" width="300">
+  
+The firmware is called Super Wifi Duck Pad because it is a fork of [wasdwasd0105/SuperWiFiDuck](https://github.com/wasdwasd0105/SuperWiFiDuck).  
+The Super Wifi Duck project is in turn is a fork of [SpacehuhnTech/WiFiDuck](https://github.com/SpacehuhnTech/WiFiDuck).
 
 ## Uses
 

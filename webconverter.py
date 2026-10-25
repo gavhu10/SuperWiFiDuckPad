@@ -29,7 +29,7 @@ def get_file_content(path):
         </section>
         </main>
         <footer>
-            <a href="https://github.com/spacehuhntech/WiFiDuck" target="_blank">Source</a>
+            <a href="https://github.com/gavhu10/SuperWiFiDuckPad" target="_blank">Source</a>
             <br><br>
             <span id="version"></span><br>
             Copyright (c) 2021 Spacehuhn Technologies<br>
